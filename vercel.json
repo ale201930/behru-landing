@@ -1,0 +1,14 @@
+{
+  "env": {
+    "DB_HOST": "gateway01.us-east-1.prod.aws.tidbcloud.com",
+    "DB_PORT": "4000",
+    "DB_USER": "bsLz7YmJUPa5utn.root",
+    "DB_PASSWORD": "gmb5SRdGzNhD7Yyn",
+    "DB_NAME": "landing_db",
+    "DB_SSL": "true",
+    "JWT_SECRET": "behru_super_secret_jwt_key_2026"
+  },
+  "framework": "nextjs",
+  "buildCommand": "next build",
+  "outputDirectory": ".next"
+}

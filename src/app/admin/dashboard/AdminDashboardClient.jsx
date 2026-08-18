@@ -10,6 +10,7 @@ export default function AdminDashboardClient({ initialConfig, initialMedia, user
   const [activeTab, setActiveTab] = useState('images'); // 'images' | 'videos' | 'config'
   const [savingConfig, setSavingConfig] = useState(false);
   const [uploadingFile, setUploadingFile] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
 
   useEffect(() => {
     if (initialMedia) {
@@ -50,39 +51,56 @@ export default function AdminDashboardClient({ initialConfig, initialMedia, user
     const file = e.target.files?.[0];
     if (!file) return;
 
+    // Validar tamaño máximo: 100MB para videos, 20MB para imágenes
+    const isVideo = file.type.startsWith('video/');
+    const maxSize = isVideo ? 100 * 1024 * 1024 : 20 * 1024 * 1024;
+    const maxLabel = isVideo ? '100MB' : '20MB';
+    if (file.size > maxSize) {
+      setMessage(`❌ Archivo demasiado grande (${(file.size / 1024 / 1024).toFixed(1)}MB). El límite es ${maxLabel}. Para videos mayores usa un enlace de YouTube.`);
+      return;
+    }
+
     setUploadingFile(true);
-    setMessage('⏳ Subiendo archivo desde tu dispositivo...');
+    setUploadProgress(0);
+    const fileSizeMB = (file.size / 1024 / 1024).toFixed(1);
+    setMessage(`⏳ Subiendo ${fileSizeMB}MB a la nube...`);
 
-    const formData = new FormData();
-    formData.append('file', file);
-
+    // Usar XMLHttpRequest para obtener progreso real
     try {
-      const res = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData
-      });
-      const data = await res.json();
+      const formData = new FormData();
+      formData.append('file', file);
 
-      if (data.success && data.url) {
-        if (formType === 'image') {
-          setImageForm(prev => ({ ...prev, url: data.url }));
-        } else if (formType === 'video') {
-          setVideoForm(prev => ({ ...prev, url: data.url }));
-        } else if (formType === 'thumbnail') {
-          setVideoForm(prev => ({ ...prev, thumbnail: data.url }));
-        } else if (formType === 'hero_preview_1') {
-          setConfig(prev => ({ ...prev, hero_preview_img_1: data.url }));
-        } else if (formType === 'hero_preview_2') {
-          setConfig(prev => ({ ...prev, hero_preview_img_2: data.url }));
-        } else if (formType === 'hero_preview_3') {
-          setConfig(prev => ({ ...prev, hero_preview_img_3: data.url }));
-        }
-        setMessage(`✅ Archivo subido con éxito: ${file.name}`);
-      } else {
-        setMessage('❌ Error al subir archivo: ' + (data.error || 'Desconocido'));
-      }
+      const url = await new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', '/api/upload');
+        xhr.upload.onprogress = (evt) => {
+          if (evt.lengthComputable) {
+            setUploadProgress(Math.round((evt.loaded / evt.total) * 100));
+          }
+        };
+        xhr.onload = () => {
+          try {
+            const data = JSON.parse(xhr.responseText);
+            if (data.success && data.url) resolve(data.url);
+            else reject(new Error(data.error || 'Error desconocido'));
+          } catch { reject(new Error('Respuesta inválida del servidor')); }
+        };
+        xhr.onerror = () => reject(new Error('Error de red al subir'));
+        xhr.send(formData);
+      });
+
+      if (formType === 'image') setImageForm(prev => ({ ...prev, url: url }));
+      else if (formType === 'video') setVideoForm(prev => ({ ...prev, url: url }));
+      else if (formType === 'thumbnail') setVideoForm(prev => ({ ...prev, thumbnail: url }));
+      else if (formType === 'hero_preview_1') setConfig(prev => ({ ...prev, hero_preview_img_1: url }));
+      else if (formType === 'hero_preview_2') setConfig(prev => ({ ...prev, hero_preview_img_2: url }));
+      else if (formType === 'hero_preview_3') setConfig(prev => ({ ...prev, hero_preview_img_3: url }));
+
+      setMessage(`✅ ¡${file.name} subido a la nube con éxito!`);
+      setUploadProgress(100);
     } catch (err) {
       setMessage('❌ Error al subir archivo: ' + err.message);
+      setUploadProgress(0);
     } finally {
       setUploadingFile(false);
     }
@@ -220,6 +238,25 @@ export default function AdminDashboardClient({ initialConfig, initialMedia, user
           fontWeight: '600'
         }}>
           {message}
+        </div>
+      )}
+
+      {/* Barra de Progreso de Subida */}
+      {uploadingFile && (
+        <div style={{ marginBottom: '1.5rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.4rem' }}>
+            <span style={{ color: '#ebcdba', fontSize: '0.85rem', fontWeight: '700' }}>Subiendo a Vercel Blob...</span>
+            <span style={{ color: '#ffffff', fontSize: '0.85rem', fontWeight: '800' }}>{uploadProgress}%</span>
+          </div>
+          <div style={{ width: '100%', height: '8px', backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: '999px', overflow: 'hidden' }}>
+            <div style={{
+              height: '100%',
+              width: `${uploadProgress}%`,
+              background: 'linear-gradient(90deg, #4b2776, #ebcdba)',
+              borderRadius: '999px',
+              transition: 'width 0.3s ease'
+            }} />
+          </div>
         </div>
       )}
 
@@ -472,6 +509,9 @@ export default function AdminDashboardClient({ initialConfig, initialMedia, user
                 <label style={{ display: 'block', fontSize: '0.875rem', color: '#ebcdba', marginBottom: '0.6rem', fontWeight: '800' }}>
                   📁 Cargar Archivo de Video (MP4) desde mi PC / Teléfono
                 </label>
+                <p style={{ fontSize: '0.75rem', color: '#94a3b8', marginBottom: '0.6rem' }}>
+                  ⚡ Límite: <strong style={{ color: '#ebcdba' }}>100MB</strong> máximo · Se sube directo a la nube (Vercel Blob) · Para videos mayores, usa enlace de YouTube.
+                </p>
                 <input
                   type="file"
                   accept="video/*"

@@ -1,49 +1,370 @@
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.cdnfonts.com/css/open-sauce-sans');
+
+/* FUENTE ÚNICA OFICIAL DEL SISTEMA: OPEN SAUCE SANS */
+@font-face {
+  font-family: 'Open Sauce Sans';
+  src: local('Open Sauce Sans'), local('OpenSauceSans-Regular'),
+       url('https://fonts.cdnfonts.com/s/43468/OpenSauceSans-Regular.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+:root {
+  /* PALETA OFICIAL DE LA MARCA (PANTONE) */
+  --brand-purple: #4b2776;       /* PANTONE P 96-16 C (Morado Real Profundo) */
+  --brand-cream: #ebcdba;        /* PANTONE P 38-9 C (Crema / Beige Cálido) */
+  --brand-dark: #121016;         /* PANTONE P Process Black C Tono Foto Real (#121016) */
+  --brand-lavender: #dedbef;     /* PANTONE P 99-2 C (Lavanda Suave) */
+
+  /* TIPOGRAFÍA ÚNICA EN TODO EL SISTEMA: OPEN SAUCE SANS */
+  --font-open-sauce: 'Open Sauce Sans', 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-coolvetica: var(--font-open-sauce);
+  --font-bellavoir: var(--font-open-sauce);
+
+  /* SUPERFICIES Y FONDOS DERIVADOS DE ALTO CONTRASTE */
+  --bg-dark: #121016;                     /* Fondo principal sincronizado con la foto */
+  --bg-purple-deep: #2c1646;               /* Fondo de secciones moradas de alto contraste */
+  --bg-purple-card: linear-gradient(145deg, #4b2776 0%, #221237 100%);
+  --bg-purple-card-hover: linear-gradient(145deg, #5c2f91 0%, #30174c 100%);
+
+  /* TEXTOS Y DESTACADOS */
+  --text-main: #ffffff;
+  --text-muted: #dedbef;                   /* Soft Lavender para textos secundarios */
+  --text-dark: #121016;                    /* Texto sobre fondo crema */
+  --text-cream: #ebcdba;                   /* Texto o destacados crema */
+
+  /* BORDES */
+  --border-subtle: rgba(235, 205, 186, 0.22); /* Basado en Cream para vibrante contraste sobre morado */
+  --border-brand: #ebcdba;                    /* Basado en Cream para hover */
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Open Sauce Sans', 'Plus Jakarta Sans', system-ui, sans-serif !important;
+}
+
+html, body {
+  background-color: var(--bg-dark);
+  color: var(--text-main);
+  font-family: 'Open Sauce Sans', 'Plus Jakarta Sans', system-ui, sans-serif !important;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+
+h1, h2, h3, h4, h5, h6, input, button, textarea, select, a, span, div, p {
+  font-family: 'Open Sauce Sans', 'Plus Jakarta Sans', system-ui, sans-serif !important;
+}
+
+/* Tipografía de Logotipo y Marca unificada en Open Sauce Sans */
+.font-behru-logo {
+  font-family: 'Open Sauce Sans', 'Plus Jakarta Sans', system-ui, sans-serif !important;
+  font-weight: 900;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  display: inline-block;
+}
+
+/* Clases de Utilidad Unificadas */
+.font-coolvetica { font-family: 'Open Sauce Sans', 'Plus Jakarta Sans', system-ui, sans-serif !important; }
+.font-open-sauce { font-family: 'Open Sauce Sans', 'Plus Jakarta Sans', system-ui, sans-serif !important; }
+.font-bellavoir { font-family: 'Open Sauce Sans', 'Plus Jakarta Sans', system-ui, sans-serif !important; }
+
+/* Selección de texto */
+::selection {
+  background: #4b2776;
+  color: var(--brand-cream);
+}
+
+/* Ocultar barra de desplazamiento */
+body::-webkit-scrollbar {
+  width: 7px;
+}
+body::-webkit-scrollbar-track {
+  background: var(--bg-dark);
+}
+body::-webkit-scrollbar-thumb {
+  background: #4b2776;
+  border-radius: 999px;
+}
+body::-webkit-scrollbar-thumb:hover {
+  background: #ebcdba;
+}
+
+/* Animaciones */
+@keyframes pulseGlow {
+  0%, 100% { opacity: 0.55; transform: scale(1); }
+  50% { opacity: 0.9; transform: scale(1.06); }
+}
+
+.bg-glow {
+  animation: pulseGlow 6s ease-in-out infinite;
+}
+
+/* Cards Estilo BeHRU con Morado Pantone Vibrante */
+.behru-card {
+  background: linear-gradient(145deg, #4b2776 0%, #221237 100%);
+  border: 1px solid rgba(235, 205, 186, 0.25);
+  border-radius: 20px;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 12px 32px -10px rgba(75, 39, 118, 0.65);
+}
+.behru-card:hover {
+  border-color: #ebcdba;
+  background: linear-gradient(145deg, #5b2e90 0%, #2f174c 100%);
+  transform: translateY(-4px);
+  box-shadow: 0 22px 45px -10px rgba(75, 39, 118, 0.85), 0 0 25px rgba(235, 205, 186, 0.2);
+}
+
+/* Botón BeHRU Principal (Crema Cálido PANTONE P 38-9 C con texto oscuro) */
+.btn-behru {
+  background: var(--brand-cream);
+  color: var(--brand-dark);
+  padding: 0.875rem 2.25rem;
+  border-radius: 9999px;
+  font-weight: 800;
+  font-size: 1rem;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 10px 25px -5px rgba(235, 205, 186, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+}
+.btn-behru:hover {
+  background: #ffffff;
+  color: var(--brand-purple);
+  transform: translateY(-2px);
+  box-shadow: 0 15px 35px -5px rgba(235, 205, 186, 0.6), 0 0 20px rgba(75, 39, 118, 0.5);
+}
+
+/* Acordeón FAQ con Alto Contraste de Morado */
+.faq-item {
+  background: linear-gradient(135deg, rgba(75, 39, 118, 0.65) 0%, rgba(18, 16, 22, 0.95) 100%);
+  border: 1px solid rgba(222, 219, 239, 0.2);
+  border-radius: 14px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+.faq-item:hover {
+  background: linear-gradient(135deg, rgba(75, 39, 118, 0.9) 0%, rgba(38, 19, 60, 0.95) 100%);
+  border-color: #ebcdba;
+  box-shadow: 0 8px 25px rgba(75, 39, 118, 0.5);
+}
+
+/* Efecto Blur Inferior */
+.fijo-blur {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100px;
+  z-index: 40;
+  pointer-events: none;
+  background: linear-gradient(to top, var(--bg-dark) 30%, transparent 100%);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* ============================================
+   RESPONSIVE LAYOUT CLASSES
+   ============================================ */
+
+/* Grid de 2 columnas centrado */
+.grid-2col {
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: center;
+}
+
+/* Section Hero */
+.hero-section {
+  position: relative;
+  padding: 3.5rem 4rem 4.5rem 4rem;
+  max-width: 100%;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 88vh;
+  overflow: hidden;
+  background-color: #121016;
+}
+
+/* Section About */
+.about-section {
+  position: relative;
+  min-height: 72vh;
+  padding: 4rem 4rem;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  overflow: hidden;
+}
+
+/* Cards de propuestas de valor centradas */
+.value-cards-grid {
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+  gap: 2rem;
+}
+
+/* Carrusel de videos */
+.video-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  padding: 1rem 0.25rem;
+}
+
+/* Tarjeta de valor (horizontal icon + texto) */
+.value-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.75rem;
+  padding: 2.5rem 2.25rem;
+}
+
+/* FAQ Section */
+.faq-section {
+  padding: 6rem 2rem;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* ============================================
+   TABLET: ≤ 1024px
+   ============================================ */
+@media (max-width: 1024px) {
+  .grid-2col {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+  }
+
+  .value-cards-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .video-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .hero-section {
+    padding: 3rem 2.5rem 4rem 2.5rem;
+    min-height: 75vh;
+  }
+
+  .about-section {
+    padding: 3.5rem 2.5rem;
+    min-height: auto;
   }
 }
 
-html {
-  height: 100%;
+/* ============================================
+   MOBILE: ≤ 768px
+   ============================================ */
+@media (max-width: 768px) {
+  /* Hero */
+  .hero-section {
+    padding: 6rem 1.5rem 3rem 1.5rem;
+    min-height: 100vh;
+    align-items: flex-end;
+    justify-content: center;
+  }
+
+  /* About */
+  .about-section {
+    padding: 3rem 1.5rem;
+    min-height: auto;
+    align-items: flex-end;
+  }
+
+  /* Layout grids */
+  .grid-2col {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
+
+  /* Value cards - stacked horizontal becomes vertical */
+  .value-card {
+    flex-direction: column;
+    gap: 1.25rem;
+    padding: 1.75rem 1.5rem;
+  }
+
+  .value-cards-grid {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  /* Videos: 1 column on mobile */
+  .video-grid {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  /* FAQ */
+  .faq-section {
+    padding: 4rem 1.25rem;
+  }
+
+  /* Section paddings */
+  section {
+    padding-left: 1.25rem !important;
+    padding-right: 1.25rem !important;
+  }
+
+  /* Pricing grid */
+  .pricing-grid {
+    grid-template-columns: 1fr !important;
+    gap: 2.5rem !important;
+  }
 }
 
-html,
-body {
-  max-width: 100vw;
-  overflow-x: hidden;
-}
+/* ============================================
+   SMALL MOBILE: ≤ 480px
+   ============================================ */
+@media (max-width: 480px) {
+  .hero-section {
+    padding: 5rem 1rem 2.5rem 1rem;
+  }
 
-body {
-  min-height: 100%;
-  display: flex;
-  flex-direction: column;
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
+  .about-section {
+    padding: 2.5rem 1rem;
+  }
 
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
-}
+  h1 { font-size: 2.1rem !important; }
+  h2 { font-size: 1.75rem !important; }
 
-a {
-  color: inherit;
-  text-decoration: none;
-}
+  .btn-behru {
+    width: 100%;
+    justify-content: center;
+    padding: 0.9rem 1.5rem !important;
+  }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
+  .value-card {
+    padding: 1.5rem 1.25rem;
+  }
+
+  .value-cards-grid {
+    gap: 1rem;
+  }
+
+  .faq-section {
+    padding: 3rem 1rem;
   }
 }

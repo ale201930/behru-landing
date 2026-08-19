@@ -159,19 +159,11 @@ body::-webkit-scrollbar-thumb:hover {
   box-shadow: 0 8px 25px rgba(75, 39, 118, 0.5);
 }
 
-/* Efecto Blur Inferior */
+/* Efecto Blur Inferior (desactivado para no tapar contenido) */
 .fijo-blur {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 100px;
-  z-index: 40;
-  pointer-events: none;
-  background: linear-gradient(to top, var(--bg-dark) 30%, transparent 100%);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  display: none;
 }
+
 
 /* ============================================
    HEADER & NAVIGATION RESPONSIVE
@@ -382,20 +374,20 @@ body::-webkit-scrollbar-thumb:hover {
   overflow: hidden;
 }
 
-/* Cards de propuestas de valor centradas */
+/* Cards de propuestas de valor centradas (2x2 en desktop, 1 columna en móvil) */
 .value-cards-grid {
   max-width: 1200px;
   margin: 0 auto;
   width: 100%;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  grid-template-columns: repeat(2, 1fr);
   gap: 2rem;
 }
 
 /* Carrusel de videos */
 .video-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 1.5rem;
   padding: 1rem 0.25rem;
 }
@@ -429,11 +421,11 @@ body::-webkit-scrollbar-thumb:hover {
   }
 
   .value-cards-grid {
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    grid-template-columns: 1fr;
   }
 
   .video-grid {
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    grid-template-columns: repeat(2, 1fr);
   }
 
   .hero-section {

@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
+
 
 const DEMO_PORTFOLIO_ITEMS = [
   { id: 1, title: 'Red and Black Party', description: 'Dirección Rojo & Negro', url: '/images/edit_promo.png' },

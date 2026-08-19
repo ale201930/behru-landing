@@ -26,7 +26,7 @@ export default async function HomePage() {
 
       {/* 1. HERO SECTION */}
       <section id="inicio" className="hero-section">
-        {/* Imagen Real Banner Completa (ruben_portrait.webp) */}
+        {/* Imagen Real Banner Completa (ruben_portrait.webp) NÍTIDA Y SIN FILTROS OSCUROS */}
         <div style={{
           position: 'absolute',
           inset: 0,
@@ -43,18 +43,11 @@ export default async function HomePage() {
               height: '100%',
               objectFit: 'cover',
               objectPosition: 'right center',
+              imageRendering: 'high-quality',
+              display: 'block',
             }}
           />
         </div>
-
-        {/* Overlay sutil para contraste de texto en pantallas medianas y móviles */}
-        <div style={{
-          position: 'absolute',
-          inset: 0,
-          background: 'linear-gradient(to right, rgba(18, 16, 22, 0.95) 0%, rgba(18, 16, 22, 0.8) 45%, rgba(18, 16, 22, 0.25) 100%)',
-          zIndex: 2,
-          pointerEvents: 'none'
-        }} />
 
         {/* Glow de Fondo Integrado en Morado Pantone */}
         <div style={{
@@ -66,7 +59,7 @@ export default async function HomePage() {
           background: 'radial-gradient(circle, rgba(75, 39, 118, 0.45) 0%, rgba(235, 205, 186, 0.08) 55%, transparent 80%)',
           filter: 'blur(100px)',
           pointerEvents: 'none',
-          zIndex: 3
+          zIndex: 2
         }} />
 
         {/* Columna Izquierda: Copy, Tarjetas y CTA sobre el lado oscuro de la imagen */}
@@ -482,15 +475,6 @@ export default async function HomePage() {
             }}
           />
         </div>
-
-        {/* Overlay sutil para contraste de texto en pantallas medianas y móviles */}
-        <div style={{
-          position: 'absolute',
-          inset: 0,
-          background: 'linear-gradient(to right, rgba(18, 16, 22, 0.95) 0%, rgba(18, 16, 22, 0.8) 45%, rgba(18, 16, 22, 0.25) 100%)',
-          zIndex: 2,
-          pointerEvents: 'none'
-        }} />
 
         {/* Contenido de Texto a la Izquierda sobre el lado oscuro de la imagen */}
         <div style={{ position: 'relative', zIndex: 10, maxWidth: '620px' }}>

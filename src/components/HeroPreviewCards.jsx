@@ -10,10 +10,14 @@ export default function HeroPreviewCards({
   const [hoveredIdx, setHoveredIdx] = useState(null);
   const [selectedImg, setSelectedImg] = useState(null);
 
+  const fallback1 = '/images/edit_promo.png';
+  const fallback2 = 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=300&q=80';
+  const fallback3 = 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=300&q=80';
+
   const images = [
-    { id: 1, url: img1, title: 'Edit Promocional 1' },
-    { id: 2, url: img2, title: 'Edit Promocional 2' },
-    { id: 3, url: img3, title: 'Edit Promocional 3' },
+    { id: 1, url: img1 || fallback1, title: 'Edit Promocional 1' },
+    { id: 2, url: img2 || fallback2, title: 'Edit Promocional 2' },
+    { id: 3, url: img3 || fallback3, title: 'Edit Promocional 3' },
   ];
 
   return (

@@ -352,13 +352,13 @@ body::-webkit-scrollbar-thumb:hover {
 /* Section Hero */
 .hero-section {
   position: relative;
-  padding: 4rem 4rem 5rem 4rem;
+  padding: 2.5rem 4rem 3rem 4rem;
   max-width: 100%;
   margin: 0 auto;
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  min-height: 88vh;
+  min-height: 85vh;
   overflow: hidden;
   background-color: #121016;
 }

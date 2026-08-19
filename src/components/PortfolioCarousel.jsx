@@ -26,11 +26,34 @@ export default function PortfolioCarousel({ initialItems = [] }) {
     return DEMO_PORTFOLIO_ITEMS;
   }, [initialItems]);
 
-  const VISIBLE_COUNT = 5;
-  const maxIndex = Math.max(0, items.length - VISIBLE_COUNT);
+  const [visibleCount, setVisibleCount] = useState(5);
+
+  useEffect(() => {
+    const updateCount = () => {
+      if (window.innerWidth < 640) {
+        setVisibleCount(1);
+      } else if (window.innerWidth < 960) {
+        setVisibleCount(3);
+      } else {
+        setVisibleCount(5);
+      }
+    };
+    updateCount();
+    window.addEventListener('resize', updateCount);
+    return () => window.removeEventListener('resize', updateCount);
+  }, []);
+
+  const maxIndex = Math.max(0, items.length - visibleCount);
   const [startIndex, setStartIndex] = useState(0);
   const [hoveredId, setHoveredId] = useState(null);
   const [selectedItem, setSelectedItem] = useState(null);
+
+  // Asegurar que startIndex no exceda maxIndex cuando cambia el tamaño de pantalla
+  useEffect(() => {
+    if (startIndex > maxIndex) {
+      setStartIndex(Math.max(0, maxIndex));
+    }
+  }, [maxIndex, startIndex]);
 
   const handlePrev = () => {
     setStartIndex((prev) => Math.max(0, prev - 1));
@@ -40,37 +63,18 @@ export default function PortfolioCarousel({ initialItems = [] }) {
     setStartIndex((prev) => Math.min(maxIndex, prev + 1));
   };
 
-  const visibleItems = items.slice(startIndex, startIndex + VISIBLE_COUNT);
+  const visibleItems = items.slice(startIndex, startIndex + visibleCount);
 
   return (
     <>
-      <div style={{ position: 'relative', width: '100%', maxWidth: '1200px', margin: '0 auto' }}>
+      <div className="portfolio-carousel-wrapper">
         
         {/* Botón Navegación Izquierda */}
         <button
           onClick={handlePrev}
           disabled={startIndex === 0}
           aria-label="Anterior"
-          style={{
-            position: 'absolute',
-            left: '-2.5rem',
-            top: '50%',
-            transform: 'translateY(-50%)',
-            zIndex: 40,
-            width: '50px',
-            height: '50px',
-            borderRadius: '50%',
-            backgroundColor: startIndex === 0 ? 'rgba(30, 30, 28, 0.4)' : '#4b2776',
-            border: `2px solid ${startIndex === 0 ? 'rgba(235,205,186,0.2)' : '#ebcdba'}`,
-            color: startIndex === 0 ? 'rgba(255,255,255,0.3)' : '#ebcdba',
-            fontSize: '1.5rem',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: startIndex === 0 ? 'not-allowed' : 'pointer',
-            boxShadow: startIndex === 0 ? 'none' : '0 10px 25px rgba(75, 39, 118, 0.8), 0 0 15px rgba(235, 205, 186, 0.3)',
-            transition: 'all 0.3s ease'
-          }}
+          className="carousel-arrow carousel-arrow-left"
         >
           ‹
         </button>
@@ -80,47 +84,22 @@ export default function PortfolioCarousel({ initialItems = [] }) {
           onClick={handleNext}
           disabled={startIndex >= maxIndex}
           aria-label="Siguiente"
-          style={{
-            position: 'absolute',
-            right: '-2.5rem',
-            top: '50%',
-            transform: 'translateY(-50%)',
-            zIndex: 40,
-            width: '50px',
-            height: '50px',
-            borderRadius: '50%',
-            backgroundColor: startIndex >= maxIndex ? 'rgba(30, 30, 28, 0.4)' : '#4b2776',
-            border: `2px solid ${startIndex >= maxIndex ? 'rgba(235,205,186,0.2)' : '#ebcdba'}`,
-            color: startIndex >= maxIndex ? 'rgba(255,255,255,0.3)' : '#ebcdba',
-            fontSize: '1.5rem',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: startIndex >= maxIndex ? 'not-allowed' : 'pointer',
-            boxShadow: startIndex >= maxIndex ? 'none' : '0 10px 25px rgba(75, 39, 118, 0.8), 0 0 15px rgba(235, 205, 186, 0.3)',
-            transition: 'all 0.3s ease'
-          }}
+          className="carousel-arrow carousel-arrow-right"
         >
           ›
         </button>
 
-        {/* Stack Solapado Estilo Figma (Negative Margins + Scale Central) */}
-        <div style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          minHeight: '440px',
-          padding: '2rem 0',
-          position: 'relative'
-        }}>
+        {/* Stack Solapado Estilo Figma */}
+        <div className="portfolio-stack-container">
           {visibleItems.map((item, idx) => {
             const isHovered = hoveredId === item.id;
-            const isCenter = idx === 2;
-            const isSubCenter = idx === 1 || idx === 3;
+            const isSingle = visibleCount === 1;
+            const isCenter = isSingle ? true : visibleCount === 3 ? idx === 1 : idx === 2;
+            const isSubCenter = visibleCount === 5 ? (idx === 1 || idx === 3) : false;
 
-            // Escalas exactas del stack de Figma
-            let baseScale = 0.92;
-            if (isCenter) baseScale = 1.12;
+            // Escalas exactas del stack
+            let baseScale = isSingle ? 1 : 0.92;
+            if (isCenter) baseScale = isSingle ? 1 : 1.08;
             else if (isSubCenter) baseScale = 0.98;
 
             let zIndexValue = 5;
@@ -131,20 +110,21 @@ export default function PortfolioCarousel({ initialItems = [] }) {
             return (
               <div
                 key={item.id || idx}
+                className="portfolio-card-item"
                 onMouseEnter={() => setHoveredId(item.id)}
                 onMouseLeave={() => setHoveredId(null)}
                 onClick={() => setSelectedItem(item)}
                 style={{
-                  width: '215px',
-                  height: '385px',
+                  width: visibleCount === 1 ? 'min(280px, 85vw)' : visibleCount === 3 ? '210px' : '215px',
+                  height: visibleCount === 1 ? '440px' : '385px',
                   borderRadius: '20px',
                   overflow: 'hidden',
                   position: 'relative',
                   cursor: 'pointer',
-                  marginLeft: idx === 0 ? 0 : '-28px', // Solapamiento negativo estilo Figma
+                  marginLeft: (idx === 0 || visibleCount === 1) ? 0 : '-28px',
                   transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
                   transform: isHovered
-                    ? 'translateY(-18px) scale(1.15)'
+                    ? 'translateY(-14px) scale(1.08)'
                     : `translateY(${isCenter ? '-8px' : '0'}) scale(${baseScale})`,
                   zIndex: zIndexValue,
                   border: isHovered

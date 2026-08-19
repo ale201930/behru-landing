@@ -18,27 +18,26 @@ export default function HeroPreviewCards({
 
   return (
     <>
-      <div style={{ display: 'flex', gap: '1.25rem', alignItems: 'center', marginBottom: '1.75rem', position: 'relative' }}>
+      <div className="hero-preview-cards-container" style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginBottom: '1.75rem', position: 'relative' }}>
         {images.map((item, idx) => {
           const isHovered = hoveredIdx === idx;
 
           return (
             <div
               key={item.id}
+              className="hero-preview-card"
               onMouseEnter={() => setHoveredIdx(idx)}
               onMouseLeave={() => setHoveredIdx(null)}
               onClick={() => setSelectedImg(item)}
               title="Haz clic para ver esta imagen en alta definición"
               style={{
-                width: '100px',
-                height: '130px',
                 borderRadius: '14px',
                 overflow: 'hidden',
                 position: 'relative',
                 cursor: 'pointer',
                 transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
                 transform: isHovered
-                  ? 'translateY(-14px) scale(1.15) rotate(-1deg)'
+                  ? 'translateY(-12px) scale(1.1) rotate(-1deg)'
                   : 'translateY(0) scale(1) rotate(0deg)',
                 zIndex: isHovered ? 40 : 10,
                 border: isHovered

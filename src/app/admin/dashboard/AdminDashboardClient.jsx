@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { upload } from '@vercel/blob/client';
 import { updateLandingConfig, saveMediaItem, deleteMediaItem } from '@/app/actions/contentActions';
 
 export default function AdminDashboardClient({ initialConfig, initialMedia, user }) {
@@ -46,7 +47,8 @@ export default function AdminDashboardClient({ initialConfig, initialMedia, user
     router.refresh();
   };
 
-  // Función genérica para subir archivo desde la PC o Móvil
+  // Función genérica para subir archivo desde la PC o Móvil usando Vercel Blob Client Upload
+  // Sube directo al blob storage desde el browser — sin pasar por el límite de 4.5MB del servidor
   const handleFileUpload = async (e, formType) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -63,34 +65,24 @@ export default function AdminDashboardClient({ initialConfig, initialMedia, user
     setUploadingFile(true);
     setUploadProgress(0);
     const fileSizeMB = (file.size / 1024 / 1024).toFixed(1);
-    setMessage(`⏳ Subiendo ${fileSizeMB}MB a la nube...`);
+    setMessage(`⏳ Subiendo ${fileSizeMB}MB directamente a la nube...`);
 
-    // Usar XMLHttpRequest para obtener progreso real
     try {
-      const formData = new FormData();
-      formData.append('file', file);
+      // Client upload: el browser sube DIRECTO a Vercel Blob (sin pasar por el servidor)
+      const safeName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
+      const filename = `uploads/${Date.now()}_${safeName}`;
 
-      const url = await new Promise((resolve, reject) => {
-        const xhr = new XMLHttpRequest();
-        xhr.open('POST', '/api/upload');
-        xhr.upload.onprogress = (evt) => {
-          if (evt.lengthComputable) {
-            setUploadProgress(Math.round((evt.loaded / evt.total) * 100));
-          }
-        };
-        xhr.onload = () => {
-          try {
-            const data = JSON.parse(xhr.responseText);
-            if (data.success && data.url) resolve(data.url);
-            else reject(new Error(data.error || 'Error desconocido'));
-          } catch { reject(new Error('Respuesta inválida del servidor')); }
-        };
-        xhr.onerror = () => reject(new Error('Error de red al subir'));
-        xhr.send(formData);
+      const blob = await upload(filename, file, {
+        access: 'public',
+        handleUploadUrl: '/api/blob/upload',
+        onUploadProgress: ({ percentage }) => {
+          setUploadProgress(Math.round(percentage));
+        },
       });
 
-      if (formType === 'image') setImageForm(prev => ({ ...prev, url: url }));
-      else if (formType === 'video') setVideoForm(prev => ({ ...prev, url: url }));
+      const url = blob.url;
+      if (formType === 'image') setImageForm(prev => ({ ...prev, url }));
+      else if (formType === 'video') setVideoForm(prev => ({ ...prev, url }));
       else if (formType === 'thumbnail') setVideoForm(prev => ({ ...prev, thumbnail: url }));
       else if (formType === 'hero_preview_1') setConfig(prev => ({ ...prev, hero_preview_img_1: url }));
       else if (formType === 'hero_preview_2') setConfig(prev => ({ ...prev, hero_preview_img_2: url }));

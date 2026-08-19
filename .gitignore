@@ -39,3 +39,6 @@ yarn-error.log*
 # large media uploads
 public/uploads/*.mp4
 public/uploads/*.mov
+
+.vercel
+.env*

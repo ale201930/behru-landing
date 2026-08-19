@@ -6,7 +6,7 @@ import VideoShowcase from '@/components/VideoShowcase';
 import HeroPreviewCards from '@/components/HeroPreviewCards';
 import PaymentLogos from '@/components/PaymentLogos';
 import ValuePropositionsGrid from '@/components/ValuePropositionsGrid';
-import { getLandingContent } from '@/app/actions/contentActions';
+import { getLandingContent } from '@/lib/content';
 
 export const revalidate = 0;
 
@@ -47,6 +47,15 @@ export default async function HomePage() {
           />
         </div>
 
+        {/* Overlay sutil para contraste de texto en pantallas medianas y móviles */}
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          background: 'linear-gradient(to right, rgba(18, 16, 22, 0.95) 0%, rgba(18, 16, 22, 0.8) 45%, rgba(18, 16, 22, 0.25) 100%)',
+          zIndex: 2,
+          pointerEvents: 'none'
+        }} />
+
         {/* Glow de Fondo Integrado en Morado Pantone */}
         <div style={{
           position: 'absolute',
@@ -57,7 +66,7 @@ export default async function HomePage() {
           background: 'radial-gradient(circle, rgba(75, 39, 118, 0.45) 0%, rgba(235, 205, 186, 0.08) 55%, transparent 80%)',
           filter: 'blur(100px)',
           pointerEvents: 'none',
-          zIndex: 2
+          zIndex: 3
         }} />
 
         {/* Columna Izquierda: Copy, Tarjetas y CTA sobre el lado oscuro de la imagen */}
@@ -315,22 +324,22 @@ export default async function HomePage() {
             justifyContent: 'center',
             minHeight: '480px'
           }}>
-            {/* Isotipo Novedoso en Forma de 3 (Fondo Suave en Capa Inferior) */}
+            {/* Isotipo en Forma de B (Fondo Suave detrás de la Laptop) */}
             <img
               src="/images/isotipo.png"
               alt="Isotipo BenRU"
               style={{
                 position: 'absolute',
-                width: '125%',
-                maxWidth: '680px',
-                right: '-10%',
+                width: '85%',
+                maxWidth: '450px',
+                right: '-2%',
                 top: '50%',
                 transform: 'translateY(-50%)',
-                opacity: 0.65,
+                opacity: 0.55,
                 zIndex: 0,
                 pointerEvents: 'none',
                 imageRendering: 'high-quality',
-                filter: 'drop-shadow(0 0 35px rgba(235, 205, 186, 0.2))'
+                filter: 'drop-shadow(0 0 25px rgba(235, 205, 186, 0.15))'
               }}
             />
 
@@ -461,18 +470,27 @@ export default async function HomePage() {
           alignItems: 'center'
         }}>
           <img
-            src="/images/Para landing 2.webp"
+            src="/images/Para landing 2.png"
             alt="Soy Ruben Torrealba BeHRU"
             style={{
               width: '100%',
               height: '100%',
               objectFit: 'contain',
               objectPosition: 'right center',
-              transform: 'scale(0.92)',
-              transformOrigin: 'right center'
+              display: 'block',
+              imageRendering: 'high-quality'
             }}
           />
         </div>
+
+        {/* Overlay sutil para contraste de texto en pantallas medianas y móviles */}
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          background: 'linear-gradient(to right, rgba(18, 16, 22, 0.95) 0%, rgba(18, 16, 22, 0.8) 45%, rgba(18, 16, 22, 0.25) 100%)',
+          zIndex: 2,
+          pointerEvents: 'none'
+        }} />
 
         {/* Contenido de Texto a la Izquierda sobre el lado oscuro de la imagen */}
         <div style={{ position: 'relative', zIndex: 10, maxWidth: '620px' }}>

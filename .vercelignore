@@ -1,0 +1,8 @@
+# Ignore large video uploads - serve via URL/CDN instead
+public/uploads/*.mp4
+public/uploads/*.mov
+public/uploads/*.webm
+public/uploads/*.avi
+
+# Node modules
+node_modules

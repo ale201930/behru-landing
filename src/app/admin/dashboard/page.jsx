@@ -1,7 +1,8 @@
 import { getAdminSession } from '@/lib/auth';
 import { redirect } from 'next/navigation';
-import { getLandingContent } from '@/app/actions/contentActions';
+import { getLandingContent } from '@/lib/content';
 import AdminDashboardClient from './AdminDashboardClient';
+
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;

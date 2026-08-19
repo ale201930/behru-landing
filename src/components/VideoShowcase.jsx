@@ -60,11 +60,33 @@ export default function VideoShowcase({ initialVideos = [] }) {
     return DEMO_VIDEOS;
   }, [initialVideos]);
 
-  const VISIBLE_COUNT = 3;
-  const maxIndex = Math.max(0, videos.length - VISIBLE_COUNT);
+  const [visibleCount, setVisibleCount] = useState(3);
+
+  useEffect(() => {
+    const updateCount = () => {
+      if (window.innerWidth < 640) {
+        setVisibleCount(1);
+      } else if (window.innerWidth < 960) {
+        setVisibleCount(2);
+      } else {
+        setVisibleCount(3);
+      }
+    };
+    updateCount();
+    window.addEventListener('resize', updateCount);
+    return () => window.removeEventListener('resize', updateCount);
+  }, []);
+
+  const maxIndex = Math.max(0, videos.length - visibleCount);
   const [startIndex, setStartIndex] = useState(0);
   const [hoveredId, setHoveredId] = useState(null);
   const [selectedVideo, setSelectedVideo] = useState(null);
+
+  useEffect(() => {
+    if (startIndex > maxIndex) {
+      setStartIndex(Math.max(0, maxIndex));
+    }
+  }, [maxIndex, startIndex]);
 
   const handlePrev = () => {
     setStartIndex((prev) => Math.max(0, prev - 1));
@@ -74,7 +96,7 @@ export default function VideoShowcase({ initialVideos = [] }) {
     setStartIndex((prev) => Math.min(maxIndex, prev + 1));
   };
 
-  const visibleVideos = videos.slice(startIndex, startIndex + VISIBLE_COUNT);
+  const visibleVideos = videos.slice(startIndex, startIndex + visibleCount);
 
   const getEmbedUrl = (url) => {
     if (url.includes('youtube.com/watch?v=')) {
@@ -92,34 +114,15 @@ export default function VideoShowcase({ initialVideos = [] }) {
   return (
     <div style={{ maxWidth: '1200px', margin: '1.5rem auto 0 auto', textAlign: 'center' }}>
 
-      {/* Carrusel de 3 Videos Visibles con Navegación por Botones y Puntos */}
-      <div style={{ position: 'relative', width: '100%' }}>
+      {/* Carrusel de Videos Visibles con Navegación por Botones y Puntos */}
+      <div className="video-showcase-wrapper" style={{ position: 'relative', width: '100%' }}>
         
         {/* Botón Anterior */}
         <button
           onClick={handlePrev}
           disabled={startIndex === 0}
           aria-label="Anterior video"
-          style={{
-            position: 'absolute',
-            left: '-2rem',
-            top: '50%',
-            transform: 'translateY(-50%)',
-            zIndex: 30,
-            width: '50px',
-            height: '50px',
-            borderRadius: '50%',
-            backgroundColor: startIndex === 0 ? 'rgba(30, 30, 28, 0.4)' : '#4b2776',
-            border: `2px solid ${startIndex === 0 ? 'rgba(235,205,186,0.2)' : '#ebcdba'}`,
-            color: startIndex === 0 ? 'rgba(255,255,255,0.3)' : '#ebcdba',
-            fontSize: '1.5rem',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: startIndex === 0 ? 'not-allowed' : 'pointer',
-            boxShadow: startIndex === 0 ? 'none' : '0 10px 25px rgba(75, 39, 118, 0.8), 0 0 15px rgba(235, 205, 186, 0.3)',
-            transition: 'all 0.3s ease'
-          }}
+          className="carousel-arrow carousel-arrow-left"
         >
           ‹
         </button>
@@ -129,26 +132,7 @@ export default function VideoShowcase({ initialVideos = [] }) {
           onClick={handleNext}
           disabled={startIndex >= maxIndex}
           aria-label="Siguiente video"
-          style={{
-            position: 'absolute',
-            right: '-2rem',
-            top: '50%',
-            transform: 'translateY(-50%)',
-            zIndex: 30,
-            width: '50px',
-            height: '50px',
-            borderRadius: '50%',
-            backgroundColor: startIndex >= maxIndex ? 'rgba(30, 30, 28, 0.4)' : '#4b2776',
-            border: `2px solid ${startIndex >= maxIndex ? 'rgba(235,205,186,0.2)' : '#ebcdba'}`,
-            color: startIndex >= maxIndex ? 'rgba(255,255,255,0.3)' : '#ebcdba',
-            fontSize: '1.5rem',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: startIndex >= maxIndex ? 'not-allowed' : 'pointer',
-            boxShadow: startIndex >= maxIndex ? 'none' : '0 10px 25px rgba(75, 39, 118, 0.8), 0 0 15px rgba(235, 205, 186, 0.3)',
-            transition: 'all 0.3s ease'
-          }}
+          className="carousel-arrow carousel-arrow-right"
         >
           ›
         </button>

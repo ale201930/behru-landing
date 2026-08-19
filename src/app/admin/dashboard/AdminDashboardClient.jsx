@@ -53,10 +53,10 @@ export default function AdminDashboardClient({ initialConfig, initialMedia, user
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Validar tamaño máximo: 100MB para videos, 20MB para imágenes
-    const isVideo = file.type.startsWith('video/');
-    const maxSize = isVideo ? 100 * 1024 * 1024 : 20 * 1024 * 1024;
-    const maxLabel = isVideo ? '100MB' : '20MB';
+    // Validar tamaño máximo: 500MB para videos, 50MB para imágenes
+    const isVideo = file.type.startsWith('video/') || /\.(mp4|mov|avi|mkv|webm|m4v)$/i.test(file.name);
+    const maxSize = isVideo ? 500 * 1024 * 1024 : 50 * 1024 * 1024;
+    const maxLabel = isVideo ? '500MB' : '50MB';
     if (file.size > maxSize) {
       setMessage(`❌ Archivo demasiado grande (${(file.size / 1024 / 1024).toFixed(1)}MB). El límite es ${maxLabel}. Para videos mayores usa un enlace de YouTube.`);
       return;
@@ -65,7 +65,7 @@ export default function AdminDashboardClient({ initialConfig, initialMedia, user
     setUploadingFile(true);
     setUploadProgress(0);
     const fileSizeMB = (file.size / 1024 / 1024).toFixed(1);
-    setMessage(`⏳ Subiendo ${fileSizeMB}MB directamente a la nube...`);
+    setMessage(`⏳ Subiendo ${fileSizeMB}MB directamente a la nube (Vercel Blob)...`);
 
     try {
       // Client upload: el browser sube DIRECTO a Vercel Blob (sin pasar por el servidor)
@@ -88,10 +88,11 @@ export default function AdminDashboardClient({ initialConfig, initialMedia, user
       else if (formType === 'hero_preview_2') setConfig(prev => ({ ...prev, hero_preview_img_2: url }));
       else if (formType === 'hero_preview_3') setConfig(prev => ({ ...prev, hero_preview_img_3: url }));
 
-      setMessage(`✅ ¡${file.name} subido a la nube con éxito!`);
+      setMessage(`✅ ¡${file.name} (${fileSizeMB}MB) subido a la nube con éxito!`);
       setUploadProgress(100);
     } catch (err) {
-      setMessage('❌ Error al subir archivo: ' + err.message);
+      console.error('Error al subir archivo:', err);
+      setMessage('❌ Error al subir archivo: ' + (err.message || 'Verifica la conexión o el formato del archivo'));
       setUploadProgress(0);
     } finally {
       setUploadingFile(false);
@@ -502,7 +503,7 @@ export default function AdminDashboardClient({ initialConfig, initialMedia, user
                   📁 Cargar Archivo de Video (MP4) desde mi PC / Teléfono
                 </label>
                 <p style={{ fontSize: '0.75rem', color: '#94a3b8', marginBottom: '0.6rem' }}>
-                  ⚡ Límite: <strong style={{ color: '#ebcdba' }}>100MB</strong> máximo · Se sube directo a la nube (Vercel Blob) · Para videos mayores, usa enlace de YouTube.
+                  ⚡ Límite: <strong style={{ color: '#ebcdba' }}>500MB</strong> máximo · Se sube directo a la nube (Vercel Blob) · Para videos mayores, usa enlace de YouTube.
                 </p>
                 <input
                   type="file"

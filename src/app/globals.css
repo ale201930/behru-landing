@@ -176,7 +176,7 @@ body::-webkit-scrollbar-thumb:hover {
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border-bottom: 1px solid rgba(222, 219, 239, 0.15);
-  padding: 1.15rem 3rem;
+  padding: clamp(0.75rem, 1.5vh, 1.15rem) clamp(1.5rem, 4vw, 3rem);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -186,13 +186,13 @@ body::-webkit-scrollbar-thumb:hover {
 .desktop-nav-wrapper {
   display: flex;
   align-items: center;
-  gap: 2.5rem;
+  gap: clamp(1.25rem, 2vw, 2.5rem);
 }
 
 .nav-link {
   color: #dedbef;
   text-decoration: none;
-  font-size: 0.925rem;
+  font-size: clamp(0.85rem, 1.1vw, 0.925rem);
   font-weight: 600;
   transition: color 0.2s ease;
 }
@@ -329,10 +329,214 @@ body::-webkit-scrollbar-thumb:hover {
   right: -2.5rem;
 }
 
-.hero-preview-card {
-  width: 100px;
-  height: 130px;
+/* ============================================
+   HERO SECTION — Layout principal
+   ============================================ */
+.hero-section {
+  position: relative;
+  width: 100%;
+  min-height: calc(100vh - 72px);
+  min-height: calc(100dvh - 72px);
+  /* Padding izquierdo más compacto para que el texto quede más centrado */
+  padding: clamp(2rem, 5vh, 3.5rem) clamp(1.5rem, 3.5vw, 3.5rem);
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0;
+  overflow: hidden;
+  background-color: #121016;
 }
+
+/* ============================================
+   PORTRAIT DE RUBEN — posición absoluta, nítida
+   ocupa el 65% derecho de la sección, sin filtros que lo atenúen
+   ============================================ */
+.hero-portrait-wrapper {
+  position: absolute;
+  /* Cubre desde el borde izquierdo hasta justo antes del carrusel */
+  left: 0;
+  right: clamp(105px, 12vw, 160px);
+  top: 0;
+  bottom: 0;
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+  /* Fade suave en el borde derecho para eliminar el corte duro */
+  -webkit-mask-image: linear-gradient(
+    90deg,
+    black 0%,
+    black 72%,
+    rgba(0,0,0,0.5) 88%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    90deg,
+    black 0%,
+    black 72%,
+    rgba(0,0,0,0.5) 88%,
+    transparent 100%
+  );
+}
+
+.hero-portrait-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /*
+   * Ruben está en el lado derecho de la imagen original.
+   * '62% top' lo centra visualmente entre el texto y el carrusel.
+   */
+  object-position: 62% top;
+  display: block;
+}
+
+/* Gradiente desde la izquierda — hace legible el texto y crea profundidad */
+.hero-portrait-shadow {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    #121016 0%,
+    rgba(18, 16, 22, 0.95) 15%,
+    rgba(18, 16, 22, 0.65) 30%,
+    rgba(18, 16, 22, 0.15) 52%,
+    transparent 70%
+  );
+  pointer-events: none;
+}
+
+/* Glow morado ambiental */
+.hero-purple-glow {
+  position: absolute;
+  top: -15%;
+  left: 0%;
+  width: min(680px, 52vw);
+  height: min(580px, 70vh);
+  background: radial-gradient(circle, rgba(75, 39, 118, 0.5) 0%, rgba(235, 205, 186, 0.06) 55%, transparent 80%);
+  filter: blur(90px);
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* ============================================
+   COLUMNA IZQUIERDA DE TEXTO
+   ============================================ */
+.hero-content-col {
+  position: relative;
+  z-index: 10;
+  /* Más estrecho: ~35-38vw para dejar espacio al portrait */
+  max-width: clamp(320px, 36vw, 500px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-self: center;
+  flex-shrink: 0;
+}
+
+.hero-title {
+  font-size: clamp(2rem, min(3.4vw, 5.2vh), 3.7rem);
+  font-weight: 900;
+  line-height: 1.06;
+  letter-spacing: -0.01em;
+  margin-bottom: clamp(0.75rem, 1.8vh, 1.35rem);
+  font-family: var(--font-open-sauce);
+}
+
+.hero-subtitle {
+  font-size: clamp(0.9rem, 1.55vh, 1.05rem);
+  color: #dedbef;
+  line-height: 1.6;
+  margin-bottom: clamp(0.9rem, 2.2vh, 1.75rem);
+  max-width: 500px;
+  font-weight: 400;
+}
+
+.hero-badge-text {
+  font-size: clamp(0.78rem, 1.2vh, 0.88rem);
+  color: #dedbef;
+  /* Más espacio entre el badge y el botón */
+  margin-bottom: clamp(1.25rem, 2.5vh, 2rem);
+  font-weight: 500;
+  opacity: 0.85;
+}
+
+.hero-cta-wrapper {
+  display: flex;
+  margin-top: 1.25rem;
+}
+
+.hero-cta-btn {
+  padding: clamp(0.75rem, 1.4vh, 1rem) clamp(2rem, 2.8vw, 2.85rem) !important;
+  font-size: clamp(0.9rem, 1.35vh, 1rem) !important;
+  font-weight: 800 !important;
+  border-radius: 9999px !important;
+  box-shadow: 0 12px 30px rgba(235, 205, 186, 0.4) !important;
+  display: inline-flex;
+}
+
+/* ============================================
+   SCROLLING STRIP (tira derecha de edits)
+   ============================================ */
+.hero-scrolling-strip {
+  position: absolute;
+  right: clamp(1rem, 2.5vw, 2.5rem);
+  top: 0;
+  bottom: 0;
+  width: clamp(90px, 8.5vw, 120px);
+  overflow: hidden;
+  z-index: 20;
+  /* Fade top y bottom para el loop invisible */
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    black 10%,
+    black 90%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    black 10%,
+    black 90%,
+    transparent 100%
+  );
+}
+
+.hero-scrolling-track {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  will-change: transform;
+}
+
+.hero-scroll-card {
+  width: 100%;
+  /* ratio 3:4 tipo portrait */
+  aspect-ratio: 3/4;
+  border-radius: 12px;
+  overflow: hidden;
+  flex-shrink: 0;
+  border: 1.5px solid rgba(235, 205, 186, 0.4);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+  background-color: #28173f;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.hero-scroll-card:hover {
+  border-color: #ebcdba;
+  box-shadow: 0 12px 30px rgba(75, 39, 118, 0.8), 0 0 18px rgba(235, 205, 186, 0.5);
+}
+
+.hero-scroll-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  pointer-events: none;
+  user-select: none;
+}
+
+
 
 /* ============================================
    RESPONSIVE LAYOUT CLASSES
@@ -347,20 +551,6 @@ body::-webkit-scrollbar-thumb:hover {
   grid-template-columns: 1fr 1fr;
   gap: 4rem;
   align-items: center;
-}
-
-/* Section Hero */
-.hero-section {
-  position: relative;
-  padding: 2.5rem 4rem 3rem 4rem;
-  max-width: 100%;
-  margin: 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  min-height: 85vh;
-  overflow: hidden;
-  background-color: #121016;
 }
 
 /* Section About */
@@ -387,9 +577,12 @@ body::-webkit-scrollbar-thumb:hover {
 /* Carrusel de videos */
 .video-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  max-width: 1050px;
+  margin: 0 auto;
+  gap: 1.75rem;
   padding: 1rem 0.25rem;
+  justify-content: center;
 }
 
 /* Tarjeta de valor (horizontal icon + texto) */
@@ -405,6 +598,86 @@ body::-webkit-scrollbar-thumb:hover {
   padding: 6rem 2rem;
   max-width: 900px;
   margin: 0 auto;
+}
+
+/* ============================================
+   LAPTOP / SHORT VIEWPORT: ≤ 820px Height
+   Garantiza que todo el Hero quepa 100% en 1 sola pantalla
+   ============================================ */
+@media (min-width: 861px) and (max-height: 820px) {
+  .header-container {
+    padding: 0.65rem 2.5rem;
+  }
+
+  .hero-section {
+    padding: 1.25rem 3rem;
+    min-height: calc(100vh - 60px);
+  }
+
+  .hero-title {
+    font-size: 2.3rem;
+    margin-bottom: 0.65rem;
+    line-height: 1.06;
+  }
+
+  .hero-subtitle {
+    font-size: 0.88rem;
+    line-height: 1.45;
+    margin-bottom: 0.85rem;
+  }
+
+  .hero-badge-text {
+    font-size: 0.74rem;
+    margin-bottom: 0.55rem;
+  }
+
+  .hero-cta-btn {
+    padding: 0.7rem 2.2rem !important;
+    font-size: 0.88rem !important;
+  }
+
+  .hero-scrolling-strip {
+    width: 88px;
+  }
+}
+
+/* Ultra Short Laptops: ≤ 700px Height (ej. 1366x768 con barras del navegador de Windows) */
+@media (min-width: 861px) and (max-height: 700px) {
+  .header-container {
+    padding: 0.5rem 2rem;
+  }
+
+  .hero-section {
+    padding: 0.9rem 2.5rem;
+    min-height: calc(100vh - 52px);
+  }
+
+  .hero-title {
+    font-size: 1.9rem;
+    margin-bottom: 0.4rem;
+    line-height: 1.04;
+  }
+
+  .hero-subtitle {
+    font-size: 0.82rem;
+    line-height: 1.4;
+    margin-bottom: 0.6rem;
+  }
+
+  .hero-badge-text {
+    font-size: 0.7rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .hero-cta-btn {
+    padding: 0.6rem 1.8rem !important;
+    font-size: 0.84rem !important;
+  }
+
+  .hero-scrolling-strip {
+    width: 78px;
+    right: 1.25rem;
+  }
 }
 
 /* ============================================
@@ -426,11 +699,6 @@ body::-webkit-scrollbar-thumb:hover {
 
   .video-grid {
     grid-template-columns: repeat(2, 1fr);
-  }
-
-  .hero-section {
-    padding: 3.5rem 2.5rem 4rem 2.5rem;
-    min-height: 75vh;
   }
 
   .about-section {
@@ -467,11 +735,41 @@ body::-webkit-scrollbar-thumb:hover {
     padding: 0.85rem 1.25rem;
   }
 
-  /* Hero */
+  /* Hero — en móvil ocultamos el strip y ajustamos el portrait */
   .hero-section {
-    padding: 3.5rem 1.25rem 3rem 1.25rem;
+    padding: 2.5rem 1.25rem 3rem 1.25rem;
     min-height: auto;
     align-items: flex-start;
+  }
+
+  .hero-content-col {
+    max-width: 100%;
+    flex: unset;
+  }
+
+  /* Portrait en móvil: más oscuro para que el texto resalte */
+  .hero-portrait-wrapper {
+    left: 0;
+    right: 0;
+  }
+
+  .hero-portrait-img {
+    object-position: 60% top;
+    opacity: 0.35;
+  }
+
+  .hero-portrait-shadow {
+    background: linear-gradient(
+      180deg,
+      rgba(18, 16, 22, 0.55) 0%,
+      rgba(18, 16, 22, 0.92) 45%,
+      #121016 100%
+    );
+  }
+
+  /* Ocultar el strip de cards en móvil */
+  .hero-scrolling-strip {
+    display: none;
   }
 
   /* About */
@@ -516,11 +814,6 @@ body::-webkit-scrollbar-thumb:hover {
     gap: 2.5rem !important;
   }
 
-  .hero-preview-card {
-    width: 88px;
-    height: 115px;
-  }
-
   .portfolio-stack-container {
     min-height: 380px;
   }
@@ -535,14 +828,14 @@ body::-webkit-scrollbar-thumb:hover {
   }
 
   .hero-section {
-    padding: 3rem 1rem 2.5rem 1rem;
+    padding: 2rem 1rem 2.5rem 1rem;
   }
 
   .about-section {
     padding: 2.5rem 1rem;
   }
 
-  h1 { font-size: 2.1rem !important; }
+  .hero-title { font-size: 2rem !important; }
   h2 { font-size: 1.75rem !important; }
 
   .btn-behru {
@@ -550,15 +843,6 @@ body::-webkit-scrollbar-thumb:hover {
     justify-content: center;
     padding: 0.9rem 1.5rem !important;
     font-size: 0.95rem !important;
-  }
-
-  .hero-preview-card {
-    width: 76px;
-    height: 100px;
-  }
-
-  .hero-preview-cards-container {
-    gap: 0.65rem !important;
   }
 
   .value-card {
@@ -573,4 +857,5 @@ body::-webkit-scrollbar-thumb:hover {
     padding: 3rem 1rem;
   }
 }
+
 

@@ -3,9 +3,10 @@ import CustomCursor from '@/components/CustomCursor';
 import FaqAccordion from '@/components/FaqAccordion';
 import PortfolioCarousel from '@/components/PortfolioCarousel';
 import VideoShowcase from '@/components/VideoShowcase';
-import HeroPreviewCards from '@/components/HeroPreviewCards';
 import PaymentLogos from '@/components/PaymentLogos';
 import ValuePropositionsGrid from '@/components/ValuePropositionsGrid';
+import HeroScrollingCards from '@/components/HeroScrollingCards';
+import PeopleShowcase from '@/components/PeopleShowcase';
 import { getLandingContent } from '@/lib/content';
 
 export const revalidate = 0;
@@ -15,6 +16,11 @@ export default async function HomePage() {
 
   const portfolioEdits = media.filter((m) => m.media_type === 'image' || m.section === 'gallery' || m.section === 'portfolio_cards');
   const videoEdits = media.filter((m) => m.media_type === 'video' || m.section === 'showcase');
+  const peopleMedia = media.filter((m) => m.section === 'people' || m.section === 'collaborators');
+  const heroStripImages = media
+    .filter(m => m.section === 'hero_strip' || m.section === 'portfolio_cards' || m.section === 'gallery')
+    .map(m => m.url)
+    .filter(Boolean);
 
   return (
     <div style={{ backgroundColor: '#121016', color: '#ffffff', minHeight: '100vh', position: 'relative', overflowX: 'hidden' }}>
@@ -26,111 +32,48 @@ export default async function HomePage() {
 
       {/* 1. HERO SECTION */}
       <section id="inicio" className="hero-section">
-        {/* Imagen Real Banner Completa (ruben_portrait.webp) NÍTIDA Y SIN FILTROS OSCUROS */}
-        <div style={{
-          position: 'absolute',
-          inset: 0,
-          width: '100%',
-          height: '100%',
-          zIndex: 1,
-          pointerEvents: 'none'
-        }}>
+        {/* Imagen de Ruben — prominente, nítida, lado derecho-centro */}
+        <div className="hero-portrait-wrapper">
           <img
             src="/images/ruben_portrait.webp"
             alt="Ruben Torrealba BeHRU"
-            style={{
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover',
-              objectPosition: 'right center',
-              imageRendering: 'high-quality',
-              display: 'block',
-            }}
+            className="hero-portrait-img"
           />
+          {/* Degradado izquierdo para legibilidad del texto */}
+          <div className="hero-portrait-shadow" />
         </div>
 
-        {/* Glow de Fondo Integrado en Morado Pantone */}
-        <div style={{
-          position: 'absolute',
-          top: '-10%',
-          left: '5%',
-          width: '700px',
-          height: '600px',
-          background: 'radial-gradient(circle, rgba(75, 39, 118, 0.45) 0%, rgba(235, 205, 186, 0.08) 55%, transparent 80%)',
-          filter: 'blur(100px)',
-          pointerEvents: 'none',
-          zIndex: 2
-        }} />
+        {/* Glow morado ambiental */}
+        <div className="hero-purple-glow" />
 
-        {/* Columna Izquierda: Copy, Tarjetas y CTA sobre el lado oscuro de la imagen */}
-        <div style={{ position: 'relative', zIndex: 10, maxWidth: '580px' }}>
-          {/* Logotipo Oficial BenRU */}
-          <div style={{ marginBottom: '1.25rem' }}>
-            <img
-              src="/images/logo_hero.png"
-              alt="BenRU Logo"
-              style={{
-                height: '115px',
-                width: 'auto',
-                objectFit: 'contain',
-                display: 'block',
-                imageRendering: 'high-quality',
-              }}
-            />
-          </div>
-
-          <h1 style={{
-            fontSize: 'clamp(2.4rem, 4vw, 3.7rem)',
-            fontWeight: '900',
-            lineHeight: 1.08,
-            letterSpacing: '-0.01em',
-            marginBottom: '1.25rem',
-            fontFamily: 'var(--font-open-sauce)'
-          }}>
-            {config.hero_title || "Tu Feed no necesita más visitas, sino mejores decisiones"}
+        {/* Columna izquierda: título, subtítulo, badge y CTA */}
+        <div className="hero-content-col">
+          <h1 className="hero-title">
+            {config.hero_title || "Transforma tu negocio con soluciones digitales de Alto Impacto"}
           </h1>
 
-          <p style={{
-            fontSize: '1.05rem',
-            color: '#dedbef',
-            lineHeight: 1.6,
-            marginBottom: '1.75rem',
-            maxWidth: '540px',
-            fontWeight: '400'
-          }}>
+          <p className="hero-subtitle">
             {config.hero_subtitle || "Diseñamos y desarrollamos experiencias interactivas personalizadas para impulsar tus ventas y destacar tu marca."}
           </p>
 
-          {/* Previsualización Interactiva de 3 Tarjetas Edits Pequeñas del Inicio */}
-          <HeroPreviewCards
-            img1={config.hero_preview_img_1}
-            img2={config.hero_preview_img_2}
-            img3={config.hero_preview_img_3}
-          />
-
-          {/* Texto Descriptivo Superior del Botón */}
-          <p style={{ fontSize: '0.85rem', color: '#dedbef', marginBottom: '1rem', fontWeight: '500', opacity: 0.9 }}>
+          <p className="hero-badge-text">
             {config.hero_badge_text || "Solo para infoproductores que buscan calidad superior"}
           </p>
 
-          <div>
+          <div className="hero-cta-wrapper">
             <a
               href={`https://wa.me/${config.whatsapp_phone || '573000000000'}?text=Hola%20Ruben,%20quiero%20cotizar%20mi%20proyecto`}
               target="_blank"
               rel="noreferrer"
-              className="btn-behru"
-              style={{
-                padding: '0.95rem 2.75rem',
-                fontSize: '1rem',
-                fontWeight: '800',
-                borderRadius: '9999px',
-                boxShadow: '0 12px 30px rgba(235, 205, 186, 0.4)'
-              }}
+              className="btn-behru hero-cta-btn"
             >
               {config.hero_cta_text || "Cotizar mi proyecto"}
             </a>
           </div>
         </div>
+
+        {/* Tira de cards derecha — carrusel vertical infinito */}
+        <HeroScrollingCards images={heroStripImages} />
       </section>
 
       {/* 2. SECTION 2: PORTFOLIO SHOWCASE */}
@@ -141,7 +84,11 @@ export default async function HomePage() {
         borderTop: '1px solid rgba(235, 205, 186, 0.15)',
         borderBottom: '1px solid rgba(235, 205, 186, 0.15)'
       }}>
-        <div style={{ maxWidth: '900px', margin: '0 auto 4rem auto' }}>
+        {/* A. Carrusel de Personas / Colaboradores (Estilo Jhonny Lubo) */}
+        <PeopleShowcase initialItems={peopleMedia} />
+
+        {/* B. Encabezado Original de las Fotos / Trabajos de Diseño */}
+        <div style={{ maxWidth: '900px', margin: '3.5rem auto 2.5rem auto', paddingTop: '2.5rem', borderTop: '1px dashed rgba(235, 205, 186, 0.2)' }}>
           <h2 style={{
             fontSize: 'clamp(2rem, 3.5vw, 3rem)',
             fontWeight: '900',
@@ -160,12 +107,28 @@ export default async function HomePage() {
           </p>
         </div>
 
-        {/* Carrusel Interactivo de 5 Cards con Rotación y Animaciones de Sobresalto */}
-        <div style={{ marginBottom: '3.5rem' }}>
+        {/* Carrusel Interactivo de Fotos / Diseños */}
+        <div style={{ marginBottom: '5rem' }}>
           <PortfolioCarousel initialItems={portfolioEdits} />
         </div>
 
-        {/* Seccion de Demostracion de Video Edits Dinamicos */}
+        {/* C. Encabezado Exclusivo para la Sección de Edits de Video */}
+        <div style={{ maxWidth: '900px', margin: '0 auto 2.5rem auto', paddingTop: '2.5rem', borderTop: '1px dashed rgba(235, 205, 186, 0.2)' }}>
+          <h2 style={{
+            fontSize: 'clamp(1.8rem, 3vw, 2.5rem)',
+            fontWeight: '900',
+            fontFamily: 'Outfit, sans-serif',
+            marginBottom: '0.75rem',
+            lineHeight: 1.2
+          }}>
+            Edición de Video de <span style={{ color: '#ebcdba' }}>Alto Impacto</span>
+          </h2>
+          <p style={{ color: '#dedbef', fontSize: '1rem', lineHeight: 1.6, maxWidth: '700px', margin: '0 auto' }}>
+            Videos diseñados con retención, ritmo y animaciones personalizadas para captar la atención de tu audiencia desde el primer segundo.
+          </p>
+        </div>
+
+        {/* Sección de Demostración de Video Edits Dinámicos */}
         <VideoShowcase initialVideos={videoEdits} />
 
         {/* Botón CTA Cotizar Mi Proyecto con Espaciado Destacado */}

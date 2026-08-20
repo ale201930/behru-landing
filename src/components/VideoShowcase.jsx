@@ -61,16 +61,16 @@ export default function VideoShowcase({ initialVideos = [] }) {
     return DEMO_VIDEOS;
   }, [initialVideos]);
 
-  const [visibleCount, setVisibleCount] = useState(3);
+  const [visibleCount, setVisibleCount] = useState(5);
 
   useEffect(() => {
     const updateCount = () => {
       if (window.innerWidth < 640) {
         setVisibleCount(1);
       } else if (window.innerWidth < 960) {
-        setVisibleCount(2);
-      } else {
         setVisibleCount(3);
+      } else {
+        setVisibleCount(5);
       }
     };
     updateCount();
@@ -138,8 +138,15 @@ export default function VideoShowcase({ initialVideos = [] }) {
           ›
         </button>
 
-        {/* Grid de 3 Tarjetas de Video Visibles */}
-        <div className="video-grid">
+        {/* Grid Lado a Lado Estilo ViralREELS (Compacto) */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: visibleCount === 1 ? '1fr' : visibleCount === 2 ? 'repeat(2, 1fr)' : 'repeat(3, 1fr)',
+          gap: '1.5rem',
+          maxWidth: '780px',
+          margin: '0 auto',
+          padding: '1rem 0'
+        }}>
           {visibleVideos.map((vid, idx) => {
             const isHovered = hoveredId === (vid.id || idx);
 
@@ -151,20 +158,21 @@ export default function VideoShowcase({ initialVideos = [] }) {
                 onClick={() => setSelectedVideo(vid)}
                 style={{
                   position: 'relative',
-                  height: '260px',
+                  width: '100%',
+                  height: '380px',
                   borderRadius: '20px',
                   overflow: 'hidden',
                   cursor: 'pointer',
                   transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
-                  transform: isHovered ? 'translateY(-12px) scale(1.04)' : 'translateY(0) scale(1)',
-                  border: isHovered ? '2.5px solid #ebcdba' : '1px solid rgba(235, 205, 186, 0.3)',
+                  transform: isHovered ? 'translateY(-10px) scale(1.03)' : 'translateY(0) scale(1)',
+                  border: isHovered ? '2.5px solid #ebcdba' : '1px solid rgba(235, 205, 186, 0.25)',
                   boxShadow: isHovered
-                    ? '0 25px 55px rgba(75, 39, 118, 0.95), 0 0 30px rgba(235, 205, 186, 0.5)'
+                    ? '0 25px 55px rgba(75, 39, 118, 0.9), 0 0 30px rgba(235, 205, 186, 0.4)'
                     : '0 12px 30px rgba(0,0,0,0.6)',
-                  backgroundColor: '#28173f'
+                  backgroundColor: '#121016'
                 }}
               >
-                {/* Imagen o Video Poster */}
+                {/* Video de Fondo en Reproducción Continua */}
                 {(() => {
                   const cover = (function(vidItem) {
                     if (vidItem.thumbnail) return { type: 'image', src: vidItem.thumbnail };
@@ -182,20 +190,22 @@ export default function VideoShowcase({ initialVideos = [] }) {
                     return { type: 'image', src: 'https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?auto=format&fit=crop&w=800&q=80' };
                   })(vid);
 
-                  if (cover.type === 'video') {
+                  if (cover.type === 'video' || (vid.url && typeof vid.url === 'string' && (vid.url.endsWith('.mp4') || vid.url.includes('.mp4') || vid.url.startsWith('/uploads/')))) {
+                    const videoSrc = vid.url || cover.src;
                     return (
                       <video
-                        src={cover.src}
-                        preload="metadata"
+                        src={videoSrc}
+                        autoPlay
+                        loop
                         muted
                         playsInline
+                        preload="auto"
                         style={{
                           width: '100%',
                           height: '100%',
                           objectFit: 'cover',
                           transition: 'transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
-                          transform: isHovered ? 'scale(1.08)' : 'scale(1)',
-                          opacity: 0.85
+                          transform: isHovered ? 'scale(1.06)' : 'scale(1)'
                         }}
                       />
                     );
@@ -210,72 +220,64 @@ export default function VideoShowcase({ initialVideos = [] }) {
                         height: '100%',
                         objectFit: 'cover',
                         transition: 'transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
-                        transform: isHovered ? 'scale(1.08)' : 'scale(1)',
-                        opacity: 0.85
+                        transform: isHovered ? 'scale(1.06)' : 'scale(1)'
                       }}
                     />
                   );
                 })()}
 
-                {/* Overlay con Botón Play Central Estilo Neón */}
+                {/* Badge Superior Tipo "PILA 01" (Estilo ViralREELS) */}
+                <div style={{
+                  position: 'absolute',
+                  top: '1.2rem',
+                  left: '1.2rem',
+                  backgroundColor: 'rgba(18, 16, 22, 0.75)',
+                  backdropFilter: 'blur(8px)',
+                  border: '1px solid rgba(235, 205, 186, 0.3)',
+                  color: '#ffffff',
+                  fontSize: '0.725rem',
+                  fontWeight: '900',
+                  padding: '0.35rem 0.85rem',
+                  borderRadius: '9999px',
+                  letterSpacing: '0.05em',
+                  textTransform: 'uppercase',
+                  zIndex: 10
+                }}>
+                  REEL 0{idx + 1}
+                </div>
+
+                {/* Gradiente Inferior Elegante con Título y Descripción */}
                 <div style={{
                   position: 'absolute',
                   inset: 0,
-                  background: isHovered
-                    ? 'linear-gradient(to top, rgba(18,16,22,0.96) 0%, rgba(75,39,118,0.45) 50%, rgba(18,16,22,0.4) 100%)'
-                    : 'linear-gradient(to top, rgba(18,16,22,0.92) 0%, rgba(18,16,22,0.2) 100%)',
+                  background: 'linear-gradient(to top, rgba(18,16,22,0.95) 0%, rgba(18,16,22,0.4) 40%, transparent 70%)',
                   display: 'flex',
                   flexDirection: 'column',
-                  justifyContent: 'space-between',
-                  padding: '1.25rem',
-                  transition: 'all 0.3s ease'
+                  justifyContent: 'flex-end',
+                  padding: '1.5rem 1.25rem',
+                  textAlign: 'left',
+                  transition: 'all 0.3s ease',
+                  zIndex: 10
                 }}>
-                  {/* Espacio vacío superior para mantener layout */}
-                  <div />
-
-                  {/* Botón Play Central Flotante */}
-                  <div style={{
-                    alignSelf: 'center',
-                    width: '60px',
-                    height: '60px',
-                    borderRadius: '50%',
-                    backgroundColor: isHovered ? '#ebcdba' : '#4b2776',
-                    color: isHovered ? '#121016' : '#ebcdba',
-                    border: '2px solid #ebcdba',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: '1.4rem',
-                    paddingLeft: '4px',
-                    boxShadow: isHovered
-                      ? '0 0 30px rgba(235, 205, 186, 0.8), 0 0 50px rgba(75, 39, 118, 0.9)'
-                      : '0 10px 25px rgba(0,0,0,0.6)',
-                    transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
-                    transform: isHovered ? 'scale(1.15)' : 'scale(1)'
+                  <h4 style={{
+                    fontSize: '1.15rem',
+                    fontWeight: '900',
+                    margin: '0 0 0.25rem 0',
+                    color: '#ffffff',
+                    fontFamily: 'Outfit, sans-serif',
+                    lineHeight: 1.25
                   }}>
-                    ▶
-                  </div>
-
-                  {/* Título e Información */}
-                  <div style={{ textAlign: 'left' }}>
-                    <h4 style={{
-                      fontSize: '1.05rem',
-                      fontWeight: '900',
-                      margin: '0 0 0.25rem 0',
-                      color: '#ffffff',
-                      fontFamily: 'var(--font-coolvetica)'
-                    }}>
-                      {vid.title || 'Video Edit BeHRU'}
-                    </h4>
-                    <p style={{
-                      fontSize: '0.775rem',
-                      color: '#ebcdba',
-                      margin: 0,
-                      fontWeight: '600'
-                    }}>
-                      {vid.description || 'Haz clic para reproducir'}
-                    </p>
-                  </div>
+                    {vid.title || 'Video Edit BeHRU'}
+                  </h4>
+                  <p style={{
+                    fontSize: '0.825rem',
+                    color: '#ebcdba',
+                    margin: 0,
+                    fontWeight: '600',
+                    opacity: 0.9
+                  }}>
+                    {vid.description || 'Haz clic para reproducir en pantalla completa'}
+                  </p>
                 </div>
               </div>
             );

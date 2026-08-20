@@ -50,12 +50,29 @@ export const DEFAULT_MEDIA = [
 ];
 
 /**
+ * Ejecuta una query con timeout explícito y siempre retorna un valor (nunca rechaza).
+ * Esto previene unhandledRejection cuando MySQL/Laragon no está disponible.
+ */
+async function safeQuery(sql, fallback = []) {
+  try {
+    const timeout = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('DB_TIMEOUT')), 4000)
+    );
+    const query = pool.query(sql);
+    const [rows] = await Promise.race([query, timeout]);
+    return rows ?? fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+/**
  * Obtiene las configuraciones de texto y los elementos multimedia para la landing.
  */
 export async function getLandingContent() {
   try {
-    const [configRows] = await pool.query('SELECT section_key, content_value FROM landing_config');
-    const [mediaRows] = await pool.query('SELECT * FROM landing_media WHERE is_active = 1 ORDER BY display_order ASC');
+    const configRows = await safeQuery('SELECT section_key, content_value FROM landing_config', []);
+    const mediaRows = await safeQuery('SELECT * FROM landing_media WHERE is_active = 1 ORDER BY display_order ASC', []);
 
     const config = { ...DEFAULT_CONFIG };
     if (Array.isArray(configRows)) {
@@ -73,8 +90,7 @@ export async function getLandingContent() {
       config,
       media: formattedMedia,
     };
-  } catch (error) {
-    console.warn('Conexión a MySQL no disponible aún, usando datos por defecto:', error?.message || error);
+  } catch {
     return {
       config: DEFAULT_CONFIG,
       media: DEFAULT_MEDIA,

@@ -8,10 +8,28 @@ import { updateLandingConfig, saveMediaItem, deleteMediaItem } from '@/app/actio
 export default function AdminDashboardClient({ initialConfig, initialMedia, user }) {
   const [config, setConfig] = useState(initialConfig);
   const [mediaList, setMediaList] = useState(initialMedia);
-  const [activeTab, setActiveTab] = useState('images'); // 'images' | 'videos' | 'config'
+  const [activeTab, setActiveTab] = useState('images'); // 'images' | 'videos' | 'herostrip' | 'config'
   const [savingConfig, setSavingConfig] = useState(false);
   const [uploadingFile, setUploadingFile] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
+
+  // Formulario para la tira de imágenes del Hero (hero_strip)
+  const [heroStripForm, setHeroStripForm] = useState({
+    title: '',
+    url: '',
+    media_type: 'image',
+    section: 'hero_strip'
+  });
+
+  // Formulario para Personas / Colaboradores (people)
+  const [peopleForm, setPeopleForm] = useState({
+    title: '',
+    description: '',
+    url: '',
+    media_type: 'image',
+    section: 'people'
+  });
+
 
   useEffect(() => {
     if (initialMedia) {
@@ -82,8 +100,10 @@ export default function AdminDashboardClient({ initialConfig, initialMedia, user
 
       const url = blob.url;
       if (formType === 'image') setImageForm(prev => ({ ...prev, url }));
+      else if (formType === 'people') setPeopleForm(prev => ({ ...prev, url }));
       else if (formType === 'video') setVideoForm(prev => ({ ...prev, url }));
       else if (formType === 'thumbnail') setVideoForm(prev => ({ ...prev, thumbnail: url }));
+      else if (formType === 'hero_strip') setHeroStripForm(prev => ({ ...prev, url }));
       else if (formType === 'hero_preview_1') setConfig(prev => ({ ...prev, hero_preview_img_1: url }));
       else if (formType === 'hero_preview_2') setConfig(prev => ({ ...prev, hero_preview_img_2: url }));
       else if (formType === 'hero_preview_3') setConfig(prev => ({ ...prev, hero_preview_img_3: url }));
@@ -147,6 +167,40 @@ export default function AdminDashboardClient({ initialConfig, initialMedia, user
     }
   };
 
+  const handleAddHeroStrip = async (e) => {
+    e.preventDefault();
+    if (!heroStripForm.url) return;
+    setMessage('');
+    try {
+      const res = await saveMediaItem(heroStripForm);
+      if (res?.item) {
+        setMediaList(prev => [...prev.filter(m => m.id !== res.item.id), res.item]);
+      }
+      setMessage('✅ Imagen de la tira del Hero publicada correctamente');
+      setHeroStripForm({ title: '', url: '', media_type: 'image', section: 'hero_strip' });
+      router.refresh();
+    } catch (err) {
+      setMessage('❌ Error guardando imagen del hero strip: ' + err.message);
+    }
+  };
+
+  const handleAddPeople = async (e) => {
+    e.preventDefault();
+    if (!peopleForm.url) return;
+    setMessage('');
+    try {
+      const res = await saveMediaItem(peopleForm);
+      if (res?.item) {
+        setMediaList(prev => [...prev.filter(m => m.id !== res.item.id), res.item]);
+      }
+      setMessage('✅ Persona / Colaborador publicado correctamente');
+      setPeopleForm({ title: '', description: '', url: '', media_type: 'image', section: 'people' });
+      router.refresh();
+    } catch (err) {
+      setMessage('❌ Error guardando persona: ' + err.message);
+    }
+  };
+
   const handleDeleteMedia = async (id) => {
     if (!confirm('¿Seguro que deseas eliminar este recurso?')) return;
     try {
@@ -158,8 +212,11 @@ export default function AdminDashboardClient({ initialConfig, initialMedia, user
     }
   };
 
-  const imagesList = mediaList.filter(m => m.media_type === 'image' || m.section === 'gallery' || m.section === 'portfolio_cards');
+  const imagesList = mediaList.filter(m => (m.media_type === 'image' || m.section === 'gallery' || m.section === 'portfolio_cards') && m.section !== 'hero_strip' && m.section !== 'people' && m.section !== 'collaborators');
   const videosList = mediaList.filter(m => m.media_type === 'video' || m.section === 'showcase');
+  const heroStripList = mediaList.filter(m => m.section === 'hero_strip');
+  const peopleList = mediaList.filter(m => m.section === 'people' || m.section === 'collaborators');
+
 
   return (
     <div style={{ maxWidth: '1150px', margin: '0 auto', padding: '2.5rem 1.5rem', fontFamily: 'var(--font-open-sauce)' }}>
@@ -254,7 +311,7 @@ export default function AdminDashboardClient({ initialConfig, initialMedia, user
       )}
 
       {/* Tabs de Navegación del Administrador */}
-      <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem' }}>
+      <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem', flexWrap: 'wrap' }}>
         <button
           onClick={() => setActiveTab('images')}
           style={{
@@ -270,7 +327,43 @@ export default function AdminDashboardClient({ initialConfig, initialMedia, user
             boxShadow: activeTab === 'images' ? '0 10px 25px rgba(75, 39, 118, 0.8)' : 'none'
           }}
         >
-          🖼️ Imágenes del Portafolio ({imagesList.length})
+          🖼️ Portafolio ({imagesList.length})
+        </button>
+
+        <button
+          onClick={() => setActiveTab('people')}
+          style={{
+            padding: '0.85rem 1.75rem',
+            borderRadius: '12px',
+            border: activeTab === 'people' ? '2px solid #ebcdba' : '1px solid rgba(255,255,255,0.1)',
+            backgroundColor: activeTab === 'people' ? '#4b2776' : '#1e293b',
+            color: activeTab === 'people' ? '#ebcdba' : '#dedbef',
+            fontSize: '1rem',
+            fontWeight: '800',
+            cursor: 'pointer',
+            transition: 'all 0.3s ease',
+            boxShadow: activeTab === 'people' ? '0 10px 25px rgba(75, 39, 118, 0.8)' : 'none'
+          }}
+        >
+          👥 Personas / Clientes ({peopleList.length})
+        </button>
+
+        <button
+          onClick={() => setActiveTab('herostrip')}
+          style={{
+            padding: '0.85rem 1.75rem',
+            borderRadius: '12px',
+            border: activeTab === 'herostrip' ? '2px solid #ebcdba' : '1px solid rgba(255,255,255,0.1)',
+            backgroundColor: activeTab === 'herostrip' ? '#4b2776' : '#1e293b',
+            color: activeTab === 'herostrip' ? '#ebcdba' : '#dedbef',
+            fontSize: '1rem',
+            fontWeight: '800',
+            cursor: 'pointer',
+            transition: 'all 0.3s ease',
+            boxShadow: activeTab === 'herostrip' ? '0 10px 25px rgba(75, 39, 118, 0.8)' : 'none'
+          }}
+        >
+          🎴 Tira Hero ({heroStripList.length})
         </button>
 
         <button
@@ -309,6 +402,321 @@ export default function AdminDashboardClient({ initialConfig, initialMedia, user
           📝 Textos de la Landing
         </button>
       </div>
+
+      {/* ===================================================
+          PESTAÑA: PERSONAS / CLIENTES / COLABORADORES
+          =================================================== */}
+      {activeTab === 'people' && (
+        <div style={{ display: 'grid', gridTemplateColumns: '1.1fr 1fr', gap: '2rem' }}>
+          {/* Formulario subir persona/colaborador */}
+          <div style={{ backgroundColor: '#1e293b', borderRadius: '18px', padding: '2rem', border: '1px solid rgba(235, 205, 186, 0.2)' }}>
+            <h2 style={{ fontSize: '1.25rem', fontWeight: '800', marginBottom: '0.5rem', color: '#ebcdba' }}>
+              👥 Subir Persona / Colaborador
+            </h2>
+            <p style={{ color: '#94a3b8', fontSize: '0.85rem', marginBottom: '1.5rem' }}>
+              Estas fotos de personas aparecen en la sección "Nombres que estuvieron presentes...".
+            </p>
+
+            <form onSubmit={handleAddPeople} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.85rem', color: '#cbd5e1', marginBottom: '0.4rem', fontWeight: '600' }}>
+                  Nombre de la Persona
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Ej: Adrián Lucena / Maider Tomasena"
+                  value={peopleForm.title}
+                  onChange={(e) => setPeopleForm({ ...peopleForm, title: e.target.value })}
+                  style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', backgroundColor: '#0f172a', border: '1px solid #334155', color: '#fff', boxSizing: 'border-box' }}
+                />
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '0.85rem', color: '#cbd5e1', marginBottom: '0.4rem', fontWeight: '600' }}>
+                  Rol / Especialidad / Descripción
+                </label>
+                <input
+                  type="text"
+                  placeholder="Ej: Copywriting / Estrategia Digital"
+                  value={peopleForm.description}
+                  onChange={(e) => setPeopleForm({ ...peopleForm, description: e.target.value })}
+                  style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', backgroundColor: '#0f172a', border: '1px solid #334155', color: '#fff', boxSizing: 'border-box' }}
+                />
+              </div>
+
+              {/* Subir desde PC / Teléfono */}
+              <div style={{
+                backgroundColor: 'rgba(75, 39, 118, 0.35)',
+                padding: '1.15rem',
+                borderRadius: '12px',
+                border: '1px dashed #ebcdba',
+                textAlign: 'center'
+              }}>
+                <label style={{ display: 'block', fontSize: '0.875rem', color: '#ebcdba', marginBottom: '0.6rem', fontWeight: '800' }}>
+                  📁 Cargar Foto desde mi PC / Teléfono
+                </label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => handleFileUpload(e, 'people')}
+                  disabled={uploadingFile}
+                  style={{ color: '#dedbef', fontSize: '0.85rem' }}
+                />
+              </div>
+
+              {/* Vista previa si hay URL */}
+              {peopleForm.url && (
+                <div style={{ textAlign: 'center' }}>
+                  <img
+                    src={peopleForm.url}
+                    alt="Preview"
+                    style={{ width: '80px', height: '110px', objectFit: 'cover', borderRadius: '10px', border: '2px solid #ebcdba', margin: '0 auto', display: 'block' }}
+                  />
+                </div>
+              )}
+
+              {/* O ingresar URL manualmente */}
+              <div>
+                <label style={{ display: 'block', fontSize: '0.85rem', color: '#cbd5e1', marginBottom: '0.4rem', fontWeight: '600' }}>
+                  O ingresa URL de la imagen
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="https://... o /uploads/..."
+                  value={peopleForm.url}
+                  onChange={(e) => setPeopleForm({ ...peopleForm, url: e.target.value })}
+                  style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', backgroundColor: '#0f172a', border: '1px solid #334155', color: '#fff', boxSizing: 'border-box' }}
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={uploadingFile}
+                style={{
+                  padding: '0.85rem',
+                  borderRadius: '999px',
+                  border: 'none',
+                  backgroundColor: '#4b2776',
+                  color: '#ebcdba',
+                  fontWeight: '800',
+                  fontSize: '0.95rem',
+                  cursor: 'pointer',
+                  boxShadow: '0 8px 20px rgba(75, 39, 118, 0.7)'
+                }}
+              >
+                + Publicar Persona / Colaborador
+              </button>
+            </form>
+          </div>
+
+          {/* Lista actual de Personas */}
+          <div style={{ backgroundColor: '#1e293b', borderRadius: '18px', padding: '2rem', border: '1px solid rgba(235, 205, 186, 0.2)' }}>
+            <h2 style={{ fontSize: '1.25rem', fontWeight: '800', marginBottom: '1.25rem', color: '#ffffff' }}>
+              Personas / Clientes Activos ({peopleList.length})
+            </h2>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', maxHeight: '520px', overflowY: 'auto', paddingRight: '0.5rem' }}>
+              {peopleList.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '2rem', color: '#94a3b8' }}>
+                  <p style={{ fontSize: '2rem', marginBottom: '0.75rem' }}>👥</p>
+                  <p style={{ fontStyle: 'italic', fontSize: '0.9rem' }}>
+                    No hay personas agregadas todavía.<br />
+                    Se mostrarán los colaboradores de ejemplo por defecto.
+                  </p>
+                </div>
+              ) : (
+                peopleList.map((item) => (
+                  <div key={item.id} style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '1rem',
+                    backgroundColor: '#0f172a',
+                    padding: '0.85rem 1rem',
+                    borderRadius: '12px',
+                    border: '1px solid #334155'
+                  }}>
+                    <img src={item.url} alt={item.title} style={{ width: '50px', height: '65px', objectFit: 'cover', borderRadius: '8px', border: '1px solid #ebcdba', flexShrink: 0 }} />
+                    <div style={{ flex: 1, overflow: 'hidden' }}>
+                      <h4 style={{ margin: '0 0 0.2rem 0', color: '#ffffff', fontSize: '0.9rem', fontWeight: '800' }}>{item.title || 'Sin Nombre'}</h4>
+                      <p style={{ margin: '0 0 0.2rem 0', color: '#ebcdba', fontSize: '0.75rem', fontWeight: '700' }}>{item.description || 'Colaborador'}</p>
+                      <div style={{ fontSize: '0.7rem', color: '#64748b', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.url}</div>
+                    </div>
+                    <button
+                      onClick={() => handleDeleteMedia(item.id)}
+                      style={{
+                        backgroundColor: 'rgba(239, 68, 68, 0.2)',
+                        color: '#fca5a5',
+                        border: '1px solid rgba(239, 68, 68, 0.4)',
+                        padding: '0.5rem 0.85rem',
+                        borderRadius: '8px',
+                        cursor: 'pointer',
+                        fontWeight: '700',
+                        fontSize: '0.8rem',
+                        flexShrink: 0
+                      }}
+                    >
+                      Eliminar
+                    </button>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+
+      {/* ===================================================
+          PESTAÑA: TIRA DEL HERO (imágenes del carrusel vertical)
+          =================================================== */}
+      {activeTab === 'herostrip' && (
+        <div style={{ display: 'grid', gridTemplateColumns: '1.1fr 1fr', gap: '2rem' }}>
+          {/* Formulario subir imagen al hero strip */}
+          <div style={{ backgroundColor: '#1e293b', borderRadius: '18px', padding: '2rem', border: '1px solid rgba(235, 205, 186, 0.2)' }}>
+            <h2 style={{ fontSize: '1.25rem', fontWeight: '800', marginBottom: '0.5rem', color: '#ebcdba' }}>
+              🎴 Agregar Imagen a la Tira del Hero
+            </h2>
+            <p style={{ color: '#94a3b8', fontSize: '0.85rem', marginBottom: '1.5rem' }}>
+              Estas imágenes aparecen en la columna derecha del banner principal en bucle infinito. Puedes agregar todas las que quieras.
+            </p>
+
+            <form onSubmit={handleAddHeroStrip} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.85rem', color: '#cbd5e1', marginBottom: '0.4rem', fontWeight: '600' }}>
+                  Nombre / Etiqueta (solo para identificar en el admin)
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Ej: Edit Fitness Promo 1"
+                  value={heroStripForm.title}
+                  onChange={(e) => setHeroStripForm({ ...heroStripForm, title: e.target.value })}
+                  style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', backgroundColor: '#0f172a', border: '1px solid #334155', color: '#fff', boxSizing: 'border-box' }}
+                />
+              </div>
+
+              {/* Subir desde PC / Móvil */}
+              <div style={{
+                backgroundColor: 'rgba(75, 39, 118, 0.35)',
+                padding: '1.15rem',
+                borderRadius: '12px',
+                border: '1px dashed #ebcdba',
+                textAlign: 'center'
+              }}>
+                <label style={{ display: 'block', fontSize: '0.875rem', color: '#ebcdba', marginBottom: '0.6rem', fontWeight: '800' }}>
+                  📁 Cargar desde mi PC / Teléfono
+                </label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => handleFileUpload(e, 'hero_strip')}
+                  disabled={uploadingFile}
+                  style={{ color: '#dedbef', fontSize: '0.85rem' }}
+                />
+              </div>
+
+              {/* Vista previa si hay URL */}
+              {heroStripForm.url && (
+                <div style={{ textAlign: 'center' }}>
+                  <img
+                    src={heroStripForm.url}
+                    alt="Preview"
+                    style={{ width: '80px', height: '110px', objectFit: 'cover', borderRadius: '10px', border: '2px solid #ebcdba', margin: '0 auto', display: 'block' }}
+                  />
+                </div>
+              )}
+
+              {/* O ingresar URL manualmente */}
+              <div>
+                <label style={{ display: 'block', fontSize: '0.85rem', color: '#cbd5e1', marginBottom: '0.4rem', fontWeight: '600' }}>
+                  O ingresa URL del archivo
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="https://... o /uploads/..."
+                  value={heroStripForm.url}
+                  onChange={(e) => setHeroStripForm({ ...heroStripForm, url: e.target.value })}
+                  style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', backgroundColor: '#0f172a', border: '1px solid #334155', color: '#fff', boxSizing: 'border-box' }}
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={uploadingFile}
+                style={{
+                  padding: '0.85rem',
+                  borderRadius: '999px',
+                  border: 'none',
+                  backgroundColor: '#4b2776',
+                  color: '#ebcdba',
+                  fontWeight: '800',
+                  fontSize: '0.95rem',
+                  cursor: 'pointer',
+                  boxShadow: '0 8px 20px rgba(75, 39, 118, 0.7)'
+                }}
+              >
+                + Publicar en la Tira del Hero
+              </button>
+            </form>
+          </div>
+
+          {/* Lista actual de imágenes del hero strip */}
+          <div style={{ backgroundColor: '#1e293b', borderRadius: '18px', padding: '2rem', border: '1px solid rgba(235, 205, 186, 0.2)' }}>
+            <h2 style={{ fontSize: '1.25rem', fontWeight: '800', marginBottom: '1.25rem', color: '#ffffff' }}>
+              Imágenes activas en la Tira ({heroStripList.length})
+            </h2>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', maxHeight: '520px', overflowY: 'auto', paddingRight: '0.5rem' }}>
+              {heroStripList.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '2rem', color: '#94a3b8' }}>
+                  <p style={{ fontSize: '2rem', marginBottom: '0.75rem' }}>🎴</p>
+                  <p style={{ fontStyle: 'italic', fontSize: '0.9rem' }}>
+                    No hay imágenes en la tira del Hero todavía.<br />
+                    Las imágenes del portafolio se mostrarán como fallback.
+                  </p>
+                </div>
+              ) : (
+                heroStripList.map((item) => (
+                  <div key={item.id} style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '1rem',
+                    backgroundColor: '#0f172a',
+                    padding: '0.85rem 1rem',
+                    borderRadius: '12px',
+                    border: '1px solid #334155'
+                  }}>
+                    <img src={item.url} alt={item.title} style={{ width: '50px', height: '65px', objectFit: 'cover', borderRadius: '8px', border: '1px solid #ebcdba', flexShrink: 0 }} />
+                    <div style={{ flex: 1, overflow: 'hidden' }}>
+                      <h4 style={{ margin: '0 0 0.2rem 0', color: '#ffffff', fontSize: '0.9rem', fontWeight: '800' }}>{item.title || 'Sin Título'}</h4>
+                      <div style={{ fontSize: '0.7rem', color: '#64748b', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.url}</div>
+                    </div>
+                    <button
+                      onClick={() => handleDeleteMedia(item.id)}
+                      style={{
+                        backgroundColor: 'rgba(239, 68, 68, 0.2)',
+                        color: '#fca5a5',
+                        border: '1px solid rgba(239, 68, 68, 0.4)',
+                        padding: '0.5rem 0.85rem',
+                        borderRadius: '8px',
+                        cursor: 'pointer',
+                        fontWeight: '700',
+                        fontSize: '0.8rem',
+                        flexShrink: 0
+                      }}
+                    >
+                      Eliminar
+                    </button>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* CONTENIDO DE PESTAÑA 1: IMÁGENES */}
       {activeTab === 'images' && (

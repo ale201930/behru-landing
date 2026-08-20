@@ -19,8 +19,31 @@ const pool = mysql.createPool({
 });
 
 pool.on('error', (err) => {
-  console.warn('MySQL Pool warning:', err.message);
+  // Silenciar errores de pool cuando Laragon/MySQL no está corriendo
+  if (process.env.NODE_ENV !== 'production') {
+    console.warn('MySQL Pool warning (normal si Laragon no está activo):', err.code || err.message);
+  }
 });
+
+// Suprimir unhandledRejection de conexiones MySQL cuando la BD no está disponible
+// Esto evita el error "undefined" en el overlay de Next.js en desarrollo
+if (typeof process !== 'undefined') {
+  process.removeAllListeners?.('unhandledRejection');
+  process.on('unhandledRejection', (reason) => {
+    if (!reason) return;
+    if (
+      reason?.code === 'ECONNREFUSED' ||
+      reason?.code === 'ER_ACCESS_DENIED_ERROR' ||
+      (typeof reason?.message === 'string' && (
+        reason.message.includes('mysql') ||
+        reason.message.includes('ECONNREFUSED') ||
+        reason.message.includes('connect')
+      ))
+    ) {
+      return;
+    }
+  });
+}
 
 export default pool;
 

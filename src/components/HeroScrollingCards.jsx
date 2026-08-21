@@ -60,6 +60,9 @@ export default function HeroScrollingCards({ images = [] }) {
               alt={`Edit ${(idx % srcImages.length) + 1}`}
               loading="lazy"
               draggable={false}
+              onError={(e) => {
+                e.currentTarget.src = 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=300&q=80';
+              }}
             />
           </div>
         ))}

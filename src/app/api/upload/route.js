@@ -38,7 +38,7 @@ async function uploadToSupabase(file) {
     });
 
   // Si el bucket no existe, crearlo automáticamente como público
-  if (error && (error.message?.includes('not found') || error.statusCode === '404' || error.error === 'Bucket not found')) {
+  if (error && (error.message?.includes('not found') || error.statusCode === '404' || error.code === 'NoSuchBucket' || error.error === 'Bucket not found')) {
     try {
       await supabase.storage.createBucket('media', { public: true });
       const retry = await supabase.storage

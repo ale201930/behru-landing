@@ -10,7 +10,7 @@ const DEMO_COLLABORATORS = [
   { id: 'col-5', name: 'Mateo González', role: 'Trafficker VIP', url: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=400&q=80' },
 ];
 
-export default function PeopleShowcase({ initialItems = [] }) {
+export default function PeopleShowcase({ initialItems = [], sectionTitle, sectionSubtitle }) {
   const items = useMemo(() => {
     if (initialItems && initialItems.length > 0) {
       if (initialItems.length < 5) {
@@ -73,9 +73,18 @@ export default function PeopleShowcase({ initialItems = [] }) {
           color: '#ffffff',
           marginBottom: '0.75rem'
         }}>
-          Nombres que estuvieron presentes en<br />
-          <span style={{ color: '#ebcdba' }}>los proyectos donde colaboré con diseño.</span>
+          {sectionTitle || (
+            <>
+              Nombres que estuvieron presentes en<br />
+              <span style={{ color: '#ebcdba' }}>los proyectos donde colaboré con diseño.</span>
+            </>
+          )}
         </h3>
+        {sectionSubtitle && (
+          <p style={{ color: '#dedbef', fontSize: '1.05rem', margin: '0.5rem 0 0 0' }}>
+            {sectionSubtitle}
+          </p>
+        )}
       </div>
 
       {/* Carrusel de Tarjetas de Personas / Colaboradores en Stack con Resplandor Central */}

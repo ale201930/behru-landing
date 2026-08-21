@@ -1,15 +1,4 @@
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap');
-@import url('https://fonts.cdnfonts.com/css/open-sauce-sans');
-
-/* FUENTE ÚNICA OFICIAL DEL SISTEMA: OPEN SAUCE SANS */
-@font-face {
-  font-family: 'Open Sauce Sans';
-  src: local('Open Sauce Sans'), local('OpenSauceSans-Regular'),
-       url('https://fonts.cdnfonts.com/s/43468/OpenSauceSans-Regular.woff') format('woff');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
 
 :root {
   /* PALETA OFICIAL DE LA MARCA (PANTONE) */
@@ -18,8 +7,8 @@
   --brand-dark: #121016;         /* PANTONE P Process Black C Tono Foto Real (#121016) */
   --brand-lavender: #dedbef;     /* PANTONE P 99-2 C (Lavanda Suave) */
 
-  /* TIPOGRAFÍA ÚNICA EN TODO EL SISTEMA: OPEN SAUCE SANS */
-  --font-open-sauce: 'Open Sauce Sans', 'Plus Jakarta Sans', system-ui, sans-serif;
+  /* TIPOGRAFÍA ÚNICA EN TODO EL SISTEMA: PLUS JAKARTA SANS */
+  --font-open-sauce: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
   --font-coolvetica: var(--font-open-sauce);
   --font-bellavoir: var(--font-open-sauce);
 

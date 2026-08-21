@@ -1,11 +1,11 @@
 'use client';
 
-export default function ValuePropositionsGrid() {
+export default function ValuePropositionsGrid({ config = {} }) {
   const cards = [
     {
       id: 1,
-      title: 'Enfoque Inicial',
-      description: 'Alineamos objetivos, eliminamos dudas, creamos un plan claro. Todo en menos tiempo del que imaginas.',
+      title: config.value_card1_title || 'Enfoque Inicial',
+      description: config.value_card1_desc || 'Alineamos objetivos, eliminamos dudas, creamos un plan claro. Todo en menos tiempo del que imaginas.',
       icon: (
         <svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
           <circle cx="12" cy="12" r="10" />
@@ -18,8 +18,8 @@ export default function ValuePropositionsGrid() {
     },
     {
       id: 2,
-      title: 'Personalización que destaca',
-      description: 'Mientras otros repiten plantillas, yo creo algo único para ti, imposible de ignorar.',
+      title: config.value_card2_title || 'Personalización que destaca',
+      description: config.value_card2_desc || 'Mientras otros repiten plantillas, yo creo algo único para ti, imposible de ignorar.',
       icon: (
         <svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
           <path d="M12 10a2 2 0 0 0-2 2c0 1.02-.1 2.51-.26 4" />
@@ -36,8 +36,8 @@ export default function ValuePropositionsGrid() {
     },
     {
       id: 3,
-      title: 'Diseño con Propósito',
-      description: 'Cada detalle visual existe solo si ayuda a tu conversión. Nada de adornos innecesarios; solo decisiones visuales que impulsan a actuar.',
+      title: config.value_card3_title || 'Diseño con Propósito',
+      description: config.value_card3_desc || 'Cada detalle visual existe solo si ayuda a tu conversión. Nada de adornos innecesarios; solo decisiones visuales que impulsan a actuar.',
       icon: (
         <svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
           <path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" />
@@ -48,8 +48,8 @@ export default function ValuePropositionsGrid() {
     },
     {
       id: 4,
-      title: 'Copywriting persuasivo (opcional)',
-      description: 'Si lo deseas, sumamos a un especialista que sabe escribir con precisión lo que tu audiencia necesita leer para actuar.',
+      title: config.value_card4_title || 'Copywriting persuasivo (opcional)',
+      description: config.value_card4_desc || 'Si lo deseas, sumamos a un especialista que sabe escribir con precisión lo que tu audiencia necesita leer para actuar.',
       icon: (
         <svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
           <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" />

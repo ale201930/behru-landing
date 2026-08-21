@@ -11,7 +11,7 @@ export default async function AdminDashboardPage() {
   const session = await getAdminSession();
   
   if (!session) {
-    redirect('/');
+    redirect('/admin/login');
   }
 
   const { config, media } = await getLandingContent();

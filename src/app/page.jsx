@@ -9,7 +9,7 @@ import HeroScrollingCards from '@/components/HeroScrollingCards';
 import PeopleShowcase from '@/components/PeopleShowcase';
 import { getLandingContent } from '@/lib/content';
 
-export const revalidate = 0;
+export const revalidate = 60;
 
 export default async function HomePage() {
   const { config, media } = await getLandingContent();
@@ -107,7 +107,11 @@ export default async function HomePage() {
         borderBottom: '1px solid rgba(235, 205, 186, 0.15)'
       }}>
         {/* A. Carrusel de Personas / Colaboradores (Estilo Jhonny Lubo) */}
-        <PeopleShowcase initialItems={peopleMedia} />
+        <PeopleShowcase
+          initialItems={peopleMedia}
+          sectionTitle={config.people_section_title}
+          sectionSubtitle={config.people_section_subtitle}
+        />
 
         {/* B. Encabezado Original de las Fotos / Trabajos de Diseño */}
         <div style={{ maxWidth: '900px', margin: '3.5rem auto 2.5rem auto', paddingTop: '2.5rem', borderTop: '1px dashed rgba(235, 205, 186, 0.2)' }}>
@@ -118,14 +122,12 @@ export default async function HomePage() {
             marginBottom: '1rem',
             lineHeight: 1.2
           }}>
-            Tu diseño determina la percepción.<br />
-            <span style={{ color: '#ebcdba' }}>Y la percepción, las ventas.</span>
+            {config.portfolio_title || "Tu diseño determina la percepción."}<br />
+            <span style={{ color: '#ebcdba' }}>{config.portfolio_subtitle || "Y la percepción, las ventas."}</span>
           </h2>
 
           <p style={{ color: '#dedbef', fontSize: '1.05rem', lineHeight: 1.75, maxWidth: '780px', margin: '0 auto' }}>
-            Grandes infoproductores confían en mí para elevar sus conversiones.<br />
-            La razón es sencilla: entienden que el diseño no es decoración, sino percepción.<br />
-            Quiero que conozcas algunas de mis creaciones y expertos con los que he tenido la oportunidad de colaborar.
+            {config.portfolio_description || "Grandes infoproductores confían en mí para elevar sus conversiones. La razón es sencilla: entienden que el diseño no es decoración, sino percepción."}
           </p>
         </div>
 
@@ -143,10 +145,10 @@ export default async function HomePage() {
             marginBottom: '0.75rem',
             lineHeight: 1.2
           }}>
-            Edición de Video de <span style={{ color: '#ebcdba' }}>Alto Impacto</span>
+            {config.video_title || "Edición de Video de Alto Impacto"}
           </h2>
           <p style={{ color: '#dedbef', fontSize: '1rem', lineHeight: 1.6, maxWidth: '700px', margin: '0 auto' }}>
-            Videos diseñados con retención, ritmo y animaciones personalizadas para captar la atención de tu audiencia desde el primer segundo.
+            {config.video_subtitle || "Videos diseñados con retención, ritmo y animaciones personalizadas para captar la atención de tu audiencia desde el primer segundo."}
           </p>
         </div>
 
@@ -156,7 +158,7 @@ export default async function HomePage() {
         {/* Botón CTA Cotizar Mi Proyecto con Espaciado Destacado */}
         <div style={{ marginTop: '4.5rem', marginBottom: '1.5rem' }}>
           <a
-            href="https://wa.me/573000000000?text=Hola%20Ruben,%20quiero%20cotizar%20mi%20proyecto"
+            href={`https://wa.me/${config.whatsapp_phone || '573000000000'}?text=Hola%20Ruben,%20quiero%20cotizar%20mi%20proyecto`}
             target="_blank"
             rel="noreferrer"
             className="btn-behru"
@@ -166,7 +168,7 @@ export default async function HomePage() {
               boxShadow: '0 12px 35px rgba(235, 205, 186, 0.45)'
             }}
           >
-            Cotizar mi proyecto
+            {config.hero_cta_text || "Cotizar mi proyecto"}
           </a>
         </div>
       </section>
@@ -193,7 +195,7 @@ export default async function HomePage() {
               marginBottom: '0.5rem',
               fontFamily: 'var(--font-open-sauce), sans-serif'
             }}>
-              Lo visual se convierte en decisión
+              {config.value_pretitle || "Lo visual se convierte en decisión"}
             </p>
 
             <h2 style={{
@@ -204,7 +206,7 @@ export default async function HomePage() {
               lineHeight: 1.2,
               color: '#ffffff'
             }}>
-              La decisión <span style={{ color: '#ebcdba' }}>se convierte en resultados.</span>
+              {config.value_title || "La decisión se convierte en resultados."}
             </h2>
 
             <p style={{
@@ -215,14 +217,16 @@ export default async function HomePage() {
               lineHeight: 1.6,
               fontFamily: 'var(--font-open-sauce), sans-serif'
             }}>
-              Así es como colaborar conmigo marca la diferencia y mejora tus resultados.
+              {config.value_subtitle || "Así es como colaborar conmigo marca la diferencia y mejora tus resultados."}
             </p>
           </div>
 
           {/* Grilla de 4 Tarjetas de Propuesta de Valor estilo Figma */}
-          <ValuePropositionsGrid />
+          <ValuePropositionsGrid config={config} />
         </div>
       </section>
+
+      {/* 4. SECTION 4: PROCESO DE COLABORACIÓN */}
       <section style={{
         background: 'linear-gradient(180deg, #121016 0%, #2c1646 50%, #121016 100%)',
         padding: '6rem 2rem',
@@ -233,46 +237,55 @@ export default async function HomePage() {
         <div className="grid-2col">
           <div style={{ position: 'relative', zIndex: 10 }}>
             <h2 style={{ fontSize: '2.5rem', fontWeight: '900', fontFamily: 'Outfit, sans-serif', marginBottom: '0.75rem', lineHeight: 1.15 }}>
-              Colaboración efectiva,<br />
-              <span style={{ color: '#ebcdba' }}>resultados inevitables</span>
+              {config.process_title || "Colaboración efectiva, resultados inevitables"}
             </h2>
             <p style={{ color: '#dedbef', fontSize: '1rem', marginBottom: '2.5rem' }}>
-              Claridad desde el inicio hasta la entrega. El acuerdo y la entrega de tu proyecto en 5 pasos.
+              {config.process_subtitle || "Claridad desde el inicio hasta la entrega. El acuerdo y la entrega de tu proyecto en 5 pasos."}
             </p>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', marginBottom: '2.5rem' }}>
               <div style={{ borderBottom: '1px solid rgba(222, 219, 239, 0.12)', paddingBottom: '1rem' }}>
-                <h4 style={{ fontSize: '1.05rem', fontWeight: '800', color: '#ffffff', marginBottom: '0.35rem' }}>Acuerdo directo</h4>
+                <h4 style={{ fontSize: '1.05rem', fontWeight: '800', color: '#ffffff', marginBottom: '0.35rem' }}>
+                  {config.process_step1_title || "Acuerdo directo"}
+                </h4>
                 <p style={{ fontSize: '0.9rem', color: '#dedbef', margin: 0, lineHeight: 1.5 }}>
-                  Definimos exactamente lo que necesitas, tiempos y precio, recursos que debes enviarnos, sin complicaciones innecesarias.
+                  {config.process_step1_desc || "Definimos exactamente lo que necesitas, tiempos y precio, recursos que debes enviarnos, sin complicaciones innecesarias."}
                 </p>
               </div>
 
               <div style={{ borderBottom: '1px solid rgba(222, 219, 239, 0.12)', paddingBottom: '1rem' }}>
-                <h4 style={{ fontSize: '1.05rem', fontWeight: '800', color: '#ffffff', marginBottom: '0.35rem' }}>Comodidad en cada pago</h4>
+                <h4 style={{ fontSize: '1.05rem', fontWeight: '800', color: '#ffffff', marginBottom: '0.35rem' }}>
+                  {config.process_step2_title || "Comodidad en cada pago"}
+                </h4>
                 <p style={{ fontSize: '0.9rem', color: '#dedbef', margin: 0, lineHeight: 1.5 }}>
-                  Puedes usar Visa, MasterCard o USDT. Pagas 50% al iniciar, 50% al entregar.
+                  {config.process_step2_desc || "Puedes usar Visa, MasterCard o USDT. Pagas 50% al iniciar, 50% al entregar."}
                 </p>
               </div>
 
               <div style={{ borderBottom: '1px solid rgba(222, 219, 239, 0.12)', paddingBottom: '1rem' }}>
-                <h4 style={{ fontSize: '1.05rem', fontWeight: '800', color: '#ffffff', marginBottom: '0.35rem' }}>Revisión estratégica</h4>
+                <h4 style={{ fontSize: '1.05rem', fontWeight: '800', color: '#ffffff', marginBottom: '0.35rem' }}>
+                  {config.process_step3_title || "Revisión estratégica"}
+                </h4>
                 <p style={{ fontSize: '0.9rem', color: '#dedbef', margin: 0, lineHeight: 1.5 }}>
-                  Recibes una propuesta inicial que incluye 1 revisión para ajustes precisos.
+                  {config.process_step3_desc || "Recibes una propuesta inicial que incluye 1 revisión para ajustes precisos."}
                 </p>
               </div>
 
               <div style={{ borderBottom: '1px solid rgba(222, 219, 239, 0.12)', paddingBottom: '1rem' }}>
-                <h4 style={{ fontSize: '1.05rem', fontWeight: '800', color: '#ffffff', marginBottom: '0.35rem' }}>Implementación responsive</h4>
+                <h4 style={{ fontSize: '1.05rem', fontWeight: '800', color: '#ffffff', marginBottom: '0.35rem' }}>
+                  {config.process_step4_title || "Implementación responsive"}
+                </h4>
                 <p style={{ fontSize: '0.9rem', color: '#dedbef', margin: 0, lineHeight: 1.5 }}>
-                  Montaje del diseño aprobado y optimización de carga para cada dispositivo que incluye 1 revisión para ajustes precisos.
+                  {config.process_step4_desc || "Montaje del diseño aprobado y optimización de carga para cada dispositivo."}
                 </p>
               </div>
 
               <div style={{ borderBottom: '1px solid rgba(222, 219, 239, 0.12)', paddingBottom: '1rem' }}>
-                <h4 style={{ fontSize: '1.05rem', fontWeight: '800', color: '#ffffff', marginBottom: '0.35rem' }}>Entrega de recursos</h4>
+                <h4 style={{ fontSize: '1.05rem', fontWeight: '800', color: '#ffffff', marginBottom: '0.35rem' }}>
+                  {config.process_step5_title || "Entrega de recursos"}
+                </h4>
                 <p style={{ fontSize: '0.9rem', color: '#dedbef', margin: 0, lineHeight: 1.5 }}>
-                  Concluimos cuando recibes todos los recursos utilizados en alta calidad y formatos optimizados.
+                  {config.process_step5_desc || "Concluimos cuando recibes todos los recursos utilizados en alta calidad y formatos optimizados."}
                 </p>
               </div>
             </div>
@@ -290,7 +303,7 @@ export default async function HomePage() {
                 boxShadow: '0 12px 30px rgba(235, 205, 186, 0.4)'
               }}
             >
-              Cotizar mi Landing
+              {config.process_cta_text || "Cotizar mi Landing"}
             </a>
           </div>
 
@@ -349,26 +362,26 @@ export default async function HomePage() {
         <div className="grid-2col pricing-grid">
           <div>
             <h2 style={{ fontSize: '2.5rem', fontWeight: '900', fontFamily: 'Outfit, sans-serif', marginBottom: '1rem', lineHeight: 1.2 }}>
-              Un paquete diseñado para infoproductores que buscan <span style={{ color: '#ebcdba' }}>calidad superior</span>.
+              {config.package_title || "Un paquete diseñado para infoproductores que buscan calidad superior."}
             </h2>
             <p style={{ color: '#dedbef', fontSize: '1rem', marginBottom: '2rem' }}>
-              Todo lo esencial para potenciar la percepción y conversión de tu negocio.
+              {config.package_subtitle || "Todo lo esencial para potenciar la percepción y conversión de tu negocio."}
             </p>
 
             <h4 style={{ fontSize: '1.1rem', fontWeight: '800', marginBottom: '1.25rem', color: '#ffffff' }}>
-              Lo que incluye mi servicio:
+              {config.package_includes_title || "Lo que incluye mi servicio:"}
             </h4>
 
             <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.85rem', color: '#dedbef', fontSize: '0.95rem', padding: 0 }}>
-              <li>→ Investigación de mercado clave</li>
-              <li>→ Estructura de contenido eficaz</li>
-              <li>→ Prototipo estratégico inicial</li>
-              <li>→ Implementación responsive a medida</li>
-              <li>→ Desarrollo técnico completo</li>
-              <li>→ Velocidad de carga excepcional</li>
-              <li>→ Integración simple hosting/dominio</li>
-              <li>→ Entrega de archivos optimizados y en alta resolución</li>
-              <li>→ Comunicación persuasiva (opcional)</li>
+              <li>→ {config.package_bullet1 || "Investigación de mercado clave"}</li>
+              <li>→ {config.package_bullet2 || "Estructura de contenido eficaz"}</li>
+              <li>→ {config.package_bullet3 || "Prototipo estratégico inicial"}</li>
+              <li>→ {config.package_bullet4 || "Implementación responsive a medida"}</li>
+              <li>→ {config.package_bullet5 || "Desarrollo técnico completo"}</li>
+              <li>→ {config.package_bullet6 || "Velocidad de carga excepcional"}</li>
+              <li>→ {config.package_bullet7 || "Integración simple hosting/dominio"}</li>
+              <li>→ {config.package_bullet8 || "Entrega de archivos optimizados y en alta resolución"}</li>
+              <li>→ {config.package_bullet9 || "Comunicación persuasiva (opcional)"}</li>
             </ul>
           </div>
 
@@ -392,7 +405,7 @@ export default async function HomePage() {
               display: 'inline-block',
               marginBottom: '1.5rem'
             }}>
-              Valor por Landing Page
+              {config.package_tag || "Valor por Landing Page"}
             </span>
 
             <div style={{
@@ -448,7 +461,7 @@ export default async function HomePage() {
           alignItems: 'center'
         }}>
           <img
-            src="/images/Para landing 2.png"
+            src="/images/para_landing_2.png"
             alt="Soy Ruben Torrealba BeHRU"
             style={{
               width: '100%',
@@ -471,23 +484,23 @@ export default async function HomePage() {
             lineHeight: 1.2,
             color: '#ffffff'
           }}>
-            Soy <span style={{ color: '#ebcdba' }}>Ruben Torrealba</span>, diseñador especializado en <span style={{ color: '#ebcdba' }}>landing pages y diseño para redes sociales</span>
+            {config.about_title || "Soy Ruben Torrealba, diseñador especializado en landing pages y diseño para redes sociales"}
           </h2>
 
           <p style={{ color: '#dedbef', fontSize: '1.05rem', lineHeight: 1.7, marginBottom: '1.25rem' }}>
-            Mis 7 cafés diarios son solo el combustible que impulsa mi obsesión por el diseño de landing pages.
+            {config.about_p1 || "Mis 7 cafés diarios son solo el combustible que impulsa mi obsesión por el diseño de landing pages."}
           </p>
 
           <p style={{ color: '#dedbef', fontSize: '1.05rem', lineHeight: 1.7, marginBottom: '1.25rem' }}>
-            Después de muchos proyectos de landing pages y diseño para redes sociales, aprendí algo simple pero poderoso:
+            {config.about_p2 || "Después de muchos proyectos de landing pages y diseño para redes sociales, aprendí algo simple pero poderoso:"}
           </p>
 
           <p style={{ color: '#ffffff', fontSize: '1.15rem', fontWeight: '800', marginBottom: '1.25rem' }}>
-            La percepción lo es todo.
+            {config.about_highlight || "La percepción lo es todo."}
           </p>
 
           <p style={{ color: '#dedbef', fontSize: '1.05rem', lineHeight: 1.7, marginBottom: '1.75rem' }}>
-            Tu producto puede ser excepcional, pero la verdadera influencia está en cómo lo presentas al mundo.
+            {config.about_p3 || "Tu producto puede ser excepcional, pero la verdadera influencia está en cómo lo presentas al mundo."}
           </p>
 
           <blockquote style={{
@@ -509,15 +522,15 @@ export default async function HomePage() {
       <section id="faq" className="faq-section">
         <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
           <h2 style={{ fontSize: '2.5rem', fontWeight: '900', fontFamily: 'Outfit, sans-serif', marginBottom: '0.75rem' }}>
-            Respuestas claras a <span style={{ color: '#ebcdba' }}>preguntas esenciales</span>
+            {config.faq_title || "Respuestas claras a preguntas esenciales"}
           </h2>
           <p style={{ color: '#dedbef', fontSize: '1rem' }}>
-            Conoce cómo trabajo, qué esperar y por qué confiarme tu proyecto es una decisión acertada.
+            {config.faq_subtitle || "Conoce cómo trabajo, qué esperar y por qué confiarme tu proyecto es una decisión acertada."}
           </p>
         </div>
 
         {/* Componente Interactivo de Acordeón */}
-        <FaqAccordion />
+        <FaqAccordion config={config} />
       </section>
 
       {/* 8. FOOTER */}
@@ -542,8 +555,9 @@ export default async function HomePage() {
             }}
           />
         </div>
-        <p style={{ marginBottom: '0.5rem', color: '#dedbef' }}>Todos los Derechos Reservados.</p>
-        <p style={{ fontWeight: '700', color: '#ebcdba' }}>Ruben Torrealba 2026</p>
+        <p style={{ fontWeight: '700', color: '#ebcdba' }}>
+          {config.footer_copyright || "Ruben Torrealba · BeHRU 2026. Todos los derechos reservados."}
+        </p>
       </footer>
     </div>
   );

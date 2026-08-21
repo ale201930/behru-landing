@@ -5,9 +5,20 @@ import { Menu, X, ArrowRight, MessageCircle } from 'lucide-react';
 import LogoSecretGesture from './LogoSecretGesture';
 import AdminAuthModal from './AdminAuthModal';
 
-export default function Header({ siteTitle = "BenRU" }) {
+export default function Header({ siteTitle = "BeHRU" }) {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isFromAdmin, setIsFromAdmin] = useState(false);
+
+  // Detectar si el usuario navegó a la landing desde el panel de administración
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('fromAdmin') === 'true') {
+        setIsFromAdmin(true);
+      }
+    }
+  }, []);
 
   // Cerrar menú móvil al cambiar tamaño de pantalla o al hacer click en un enlace
   useEffect(() => {
@@ -138,6 +149,34 @@ export default function Header({ siteTitle = "BenRU" }) {
           className="mobile-menu-backdrop"
           onClick={() => setIsMobileMenuOpen(false)}
         />
+      )}
+
+      {/* Botón flotante para regresar al Panel de Administración sin re-loguearse */}
+      {isFromAdmin && (
+        <a
+          href="/admin/dashboard"
+          style={{
+            position: 'fixed',
+            bottom: '2rem',
+            right: '2rem',
+            zIndex: 99999,
+            backgroundColor: '#ebcdba',
+            color: '#121016',
+            padding: '0.85rem 1.6rem',
+            borderRadius: '999px',
+            fontWeight: '900',
+            fontSize: '0.9rem',
+            textDecoration: 'none',
+            boxShadow: '0 12px 35px rgba(235, 205, 186, 0.6), 0 4px 15px rgba(0,0,0,0.8)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.6rem',
+            border: '2px solid #ffffff',
+            transition: 'transform 0.25s ease'
+          }}
+        >
+          <span>🔙</span> Regresar al Admin
+        </a>
       )}
 
       {/* Modal Oculto de Autenticación */}

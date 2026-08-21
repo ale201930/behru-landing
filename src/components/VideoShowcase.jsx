@@ -175,23 +175,29 @@ export default function VideoShowcase({ initialVideos = [] }) {
               >
                 {/* Video de Fondo en Reproducción Continua */}
                 {(() => {
-                  const cover = (function(vidItem) {
-                    if (vidItem.thumbnail) return { type: 'image', src: vidItem.thumbnail };
-                    if (vidItem.thumbnail_url) return { type: 'image', src: vidItem.thumbnail_url };
+                  const isDirectVideo = (url) => {
+                    if (!url || typeof url !== 'string') return false;
+                    return url.includes('.mp4') || url.includes('.webm') || url.includes('.mov') || url.startsWith('/uploads/') || url.startsWith('/api/video/') || url.includes('/storage/v1/object/');
+                  };
 
+                  const cover = (function(vidItem) {
                     if (vidItem.url && typeof vidItem.url === 'string') {
                       const ytMatch = vidItem.url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/);
                       if (ytMatch && ytMatch[1]) {
                         return { type: 'image', src: `https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg` };
                       }
-                      if (vidItem.url.includes('.mp4') || vidItem.url.startsWith('/uploads/')) {
-                        return { type: 'video', src: `${vidItem.url}#t=0.5` };
+                      if (isDirectVideo(vidItem.url)) {
+                        return { type: 'video', src: vidItem.url };
                       }
                     }
+
+                    if (vidItem.thumbnail) return { type: 'image', src: vidItem.thumbnail };
+                    if (vidItem.thumbnail_url) return { type: 'image', src: vidItem.thumbnail_url };
+
                     return { type: 'image', src: 'https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?auto=format&fit=crop&w=800&q=80' };
                   })(vid);
 
-                  if (cover.type === 'video' || (vid.url && typeof vid.url === 'string' && (vid.url.endsWith('.mp4') || vid.url.includes('.mp4') || vid.url.startsWith('/uploads/')))) {
+                  if (cover.type === 'video' || isDirectVideo(vid.url)) {
                     const videoSrc = vid.url || cover.src;
                     return (
                       <video
@@ -200,7 +206,8 @@ export default function VideoShowcase({ initialVideos = [] }) {
                         loop
                         muted
                         playsInline
-                        preload="auto"
+                        preload="metadata"
+                        poster={vid.thumbnail || undefined}
                         style={{
                           width: '100%',
                           height: '100%',

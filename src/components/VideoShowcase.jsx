@@ -138,12 +138,12 @@ export default function VideoShowcase({ initialVideos = [] }) {
           ›
         </button>
 
-        {/* Grid Lado a Lado Estilo ViralREELS (Exactamente 3 Videos en 1 Fila) */}
+        {/* Grid Lado a Lado Estilo ViralREELS (Idéntico en tamaño a las imágenes) */}
         <div style={{
           display: 'grid',
           gridTemplateColumns: visibleCount === 1 ? '1fr' : visibleCount === 2 ? 'repeat(2, 1fr)' : 'repeat(3, 1fr)',
           gap: '1.5rem',
-          maxWidth: visibleCount === 1 ? '340px' : visibleCount === 2 ? '650px' : '960px',
+          maxWidth: visibleCount === 1 ? '280px' : visibleCount === 2 ? '520px' : '780px',
           margin: '0 auto',
           padding: '1rem 0'
         }}>
@@ -153,21 +153,22 @@ export default function VideoShowcase({ initialVideos = [] }) {
             return (
               <div
                 key={vid.id || idx}
+                className="portfolio-card-item"
                 onMouseEnter={() => setHoveredId(vid.id || idx)}
                 onMouseLeave={() => setHoveredId(null)}
                 onClick={() => setSelectedVideo(vid)}
                 style={{
                   position: 'relative',
                   width: '100%',
-                  height: '380px',
+                  height: visibleCount === 1 ? '440px' : '385px',
                   borderRadius: '20px',
                   overflow: 'hidden',
                   cursor: 'pointer',
                   transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
-                  transform: isHovered ? 'translateY(-10px) scale(1.03)' : 'translateY(0) scale(1)',
+                  transform: isHovered ? 'translateY(-14px) scale(1.08)' : 'translateY(0) scale(1)',
                   border: isHovered ? '2.5px solid #ebcdba' : '1px solid rgba(235, 205, 186, 0.25)',
                   boxShadow: isHovered
-                    ? '0 25px 55px rgba(75, 39, 118, 0.9), 0 0 30px rgba(235, 205, 186, 0.4)'
+                    ? '0 30px 70px rgba(75, 39, 118, 0.95), 0 0 35px rgba(235, 205, 186, 0.6)'
                     : '0 12px 30px rgba(0,0,0,0.6)',
                   backgroundColor: '#121016'
                 }}

@@ -43,6 +43,7 @@ export default function PeopleShowcase({ initialItems = [], sectionTitle, sectio
   const maxIndex = Math.max(0, items.length - visibleCount);
   const [startIndex, setStartIndex] = useState(0);
   const [hoveredId, setHoveredId] = useState(null);
+  const [isPaused, setIsPaused] = useState(false);
 
   useEffect(() => {
     if (startIndex > maxIndex) {
@@ -50,12 +51,23 @@ export default function PeopleShowcase({ initialItems = [], sectionTitle, sectio
     }
   }, [maxIndex, startIndex]);
 
+  // Autoplay continuo idéntico a las fotos del portafolio (con pausa automática al hacer hover)
+  useEffect(() => {
+    if (isPaused || maxIndex <= 0) return;
+
+    const timer = setInterval(() => {
+      setStartIndex((prev) => (prev >= maxIndex ? 0 : prev + 1));
+    }, 3500);
+
+    return () => clearInterval(timer);
+  }, [isPaused, maxIndex]);
+
   const handlePrev = () => {
-    setStartIndex((prev) => Math.max(0, prev - 1));
+    setStartIndex((prev) => (prev > 0 ? prev - 1 : Math.max(0, items.length - visibleCount)));
   };
 
   const handleNext = () => {
-    setStartIndex((prev) => Math.min(maxIndex, prev + 1));
+    setStartIndex((prev) => (prev < maxIndex ? prev + 1 : 0));
   };
 
   const visibleItems = items.slice(startIndex, startIndex + visibleCount);
@@ -88,9 +100,14 @@ export default function PeopleShowcase({ initialItems = [], sectionTitle, sectio
       </div>
 
       {/* Carrusel de Tarjetas de Personas / Colaboradores en Stack con Resplandor Central */}
-      <div className="portfolio-carousel-wrapper" style={{ position: 'relative', width: '100%' }}>
+      <div
+        className="portfolio-carousel-wrapper"
+        style={{ position: 'relative', width: '100%' }}
+        onMouseEnter={() => setIsPaused(true)}
+        onMouseLeave={() => setIsPaused(false)}
+      >
         
-        {/* Glow de Fondo Morado en el Centro (Idéntico a jhonnylubo.com) */}
+        {/* Glow de Fondo Morado en el Centro */}
         <div style={{
           position: 'absolute',
           top: '50%',
@@ -112,16 +129,13 @@ export default function PeopleShowcase({ initialItems = [], sectionTitle, sectio
             const centerIdx = Math.floor(visibleCount / 2);
             const offset = idx - centerIdx; // -2, -1, 0, 1, 2
 
-            // Arco en forma de U / Abanico idéntico a la imagen de referencia (jhonnylubo.com)
-            // El centro es el más alto, las tarjetas laterales caen en altura (translateY positivo) y rotan hacia afuera.
+            // Arco en forma de U / Abanico manteniéndolo idéntico
             let rotateDeg = 0;
             let translateY = 0;
 
             if (!isSingle) {
               if (visibleCount === 5) {
-                // Rotaciones: -16deg, -8deg, 0deg, 8deg, 16deg
                 rotateDeg = offset * 8;
-                // Curva de arco: el centro está en 0 (más alto), las laterales bajan progresivamente (25px y 65px)
                 translateY = Math.pow(Math.abs(offset), 1.8) * 22;
               } else if (visibleCount === 3) {
                 rotateDeg = offset * 10;
@@ -148,7 +162,7 @@ export default function PeopleShowcase({ initialItems = [], sectionTitle, sectio
                   borderRadius: '24px',
                   overflow: 'hidden',
                   position: 'relative',
-                  marginLeft: (idx === 0 || visibleCount === 1) ? 0 : '-18px',
+                  marginLeft: (idx === 0 || visibleCount === 1) ? 0 : '-55px',
                   transition: 'all 0.45s cubic-bezier(0.16, 1, 0.3, 1)',
                   transform: isHovered
                     ? `translateY(${translateY - 20}px) rotate(0deg) scale(1.12)`

@@ -48,6 +48,7 @@ export default function PortfolioCarousel({ initialItems = [] }) {
   const [startIndex, setStartIndex] = useState(0);
   const [hoveredId, setHoveredId] = useState(null);
   const [selectedItem, setSelectedItem] = useState(null);
+  const [isPaused, setIsPaused] = useState(false);
 
   // Asegurar que startIndex no exceda maxIndex cuando cambia el tamaño de pantalla
   useEffect(() => {
@@ -55,6 +56,17 @@ export default function PortfolioCarousel({ initialItems = [] }) {
       setStartIndex(Math.max(0, maxIndex));
     }
   }, [maxIndex, startIndex]);
+
+  // Autoplay continuo de los diseños con pausa automática al ponerse encima (hover)
+  useEffect(() => {
+    if (isPaused || maxIndex <= 0) return;
+
+    const timer = setInterval(() => {
+      setStartIndex((prev) => (prev >= maxIndex ? 0 : prev + 1));
+    }, 3500);
+
+    return () => clearInterval(timer);
+  }, [isPaused, maxIndex]);
 
   const handlePrev = () => {
     setStartIndex((prev) => Math.max(0, prev - 1));
@@ -68,7 +80,11 @@ export default function PortfolioCarousel({ initialItems = [] }) {
 
   return (
     <>
-      <div className="portfolio-carousel-wrapper">
+      <div
+        className="portfolio-carousel-wrapper"
+        onMouseEnter={() => setIsPaused(true)}
+        onMouseLeave={() => setIsPaused(false)}
+      >
         
         {/* Botón Navegación Izquierda */}
         <button

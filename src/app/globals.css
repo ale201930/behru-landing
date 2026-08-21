@@ -329,6 +329,24 @@ body::-webkit-scrollbar-thumb:hover {
   right: -2.5rem;
 }
 
+/* Animación de Flotación Sutil para Tarjetas de Diseño */
+@keyframes subtleFloat {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.portfolio-card-item {
+  animation: subtleFloat 4s ease-in-out infinite;
+}
+
+.portfolio-carousel-wrapper:hover .portfolio-card-item {
+  animation-play-state: paused !important;
+}
+
 /* ============================================
    HERO SECTION — Layout principal
    ============================================ */

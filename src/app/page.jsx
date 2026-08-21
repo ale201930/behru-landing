@@ -14,12 +14,34 @@ export const revalidate = 0;
 export default async function HomePage() {
   const { config, media } = await getLandingContent();
 
-  const portfolioEdits = media.filter((m) => m.media_type === 'image' || m.section === 'gallery' || m.section === 'portfolio_cards');
-  const videoEdits = media.filter((m) => m.media_type === 'video' || m.section === 'showcase');
+  const portfolioEdits = media.filter(
+    (m) =>
+      (m.media_type === 'image' || m.section === 'gallery' || m.section === 'portfolio_cards') &&
+      m.section !== 'people' &&
+      m.section !== 'collaborators' &&
+      m.section !== 'hero_strip' &&
+      m.section !== 'showcase'
+  );
+  const videoEdits = media.filter(
+    (m) =>
+      (m.media_type === 'video' || m.section === 'showcase') &&
+      m.section !== 'people' &&
+      m.section !== 'collaborators' &&
+      m.section !== 'hero_strip'
+  );
   const peopleMedia = media.filter((m) => m.section === 'people' || m.section === 'collaborators');
-  const heroStripImages = media
-    .filter(m => m.section === 'hero_strip' || m.section === 'portfolio_cards' || m.section === 'gallery')
-    .map(m => m.url)
+  const heroStripMedia = media.filter((m) => m.section === 'hero_strip');
+  const heroStripImages = (
+    heroStripMedia.length > 0
+      ? heroStripMedia
+      : media.filter(
+          (m) =>
+            (m.section === 'gallery' || m.section === 'portfolio_cards') &&
+            m.section !== 'people' &&
+            m.section !== 'collaborators'
+        )
+  )
+    .map((m) => m.url)
     .filter(Boolean);
 
   return (

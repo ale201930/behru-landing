@@ -81,24 +81,27 @@ export default function AdminDashboardClient({ initialConfig, initialMedia, user
     }
 
     setUploadingFile(true);
-    setUploadProgress(0);
+    setUploadProgress(15);
     const fileSizeMB = (file.size / 1024 / 1024).toFixed(1);
-    setMessage(`⏳ Subiendo ${fileSizeMB}MB directamente a la nube (Vercel Blob)...`);
+    setMessage(`⏳ Subiendo ${fileSizeMB}MB a la nube...`);
 
     try {
-      // Client upload: el browser sube DIRECTO a Vercel Blob (sin pasar por el servidor)
-      const safeName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
-      const filename = `uploads/${Date.now()}_${safeName}`;
+      const formData = new FormData();
+      formData.append('file', file);
 
-      const blob = await upload(filename, file, {
-        access: 'public',
-        handleUploadUrl: '/api/blob/upload',
-        onUploadProgress: ({ percentage }) => {
-          setUploadProgress(Math.round(percentage));
-        },
+      setUploadProgress(50);
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
       });
 
-      const url = blob.url;
+      const data = await response.json();
+      if (!response.ok || !data.url) {
+        throw new Error(data.error || 'Error al subir archivo');
+      }
+
+      const url = data.url;
+
       if (formType === 'image') setImageForm(prev => ({ ...prev, url }));
       else if (formType === 'people') setPeopleForm(prev => ({ ...prev, url }));
       else if (formType === 'video') setVideoForm(prev => ({ ...prev, url }));
@@ -108,7 +111,7 @@ export default function AdminDashboardClient({ initialConfig, initialMedia, user
       else if (formType === 'hero_preview_2') setConfig(prev => ({ ...prev, hero_preview_img_2: url }));
       else if (formType === 'hero_preview_3') setConfig(prev => ({ ...prev, hero_preview_img_3: url }));
 
-      setMessage(`✅ ¡${file.name} (${fileSizeMB}MB) subido a la nube con éxito!`);
+      setMessage(`✅ ¡${file.name} (${fileSizeMB}MB) subido con éxito!`);
       setUploadProgress(100);
     } catch (err) {
       console.error('Error al subir archivo:', err);

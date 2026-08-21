@@ -61,16 +61,16 @@ export default function VideoShowcase({ initialVideos = [] }) {
     return DEMO_VIDEOS;
   }, [initialVideos]);
 
-  const [visibleCount, setVisibleCount] = useState(5);
+  const [visibleCount, setVisibleCount] = useState(3);
 
   useEffect(() => {
     const updateCount = () => {
       if (window.innerWidth < 640) {
         setVisibleCount(1);
       } else if (window.innerWidth < 960) {
-        setVisibleCount(3);
+        setVisibleCount(2);
       } else {
-        setVisibleCount(5);
+        setVisibleCount(3);
       }
     };
     updateCount();
@@ -138,12 +138,12 @@ export default function VideoShowcase({ initialVideos = [] }) {
           ›
         </button>
 
-        {/* Grid Lado a Lado Estilo ViralREELS (Compacto) */}
+        {/* Grid Lado a Lado Estilo ViralREELS (Exactamente 3 Videos en 1 Fila) */}
         <div style={{
           display: 'grid',
           gridTemplateColumns: visibleCount === 1 ? '1fr' : visibleCount === 2 ? 'repeat(2, 1fr)' : 'repeat(3, 1fr)',
           gap: '1.5rem',
-          maxWidth: '780px',
+          maxWidth: visibleCount === 1 ? '340px' : visibleCount === 2 ? '650px' : '960px',
           margin: '0 auto',
           padding: '1rem 0'
         }}>
